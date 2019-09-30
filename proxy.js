@@ -56,7 +56,8 @@ catch(err => {
 			{"path": "../rufs-base-es6/RufsServiceMicroService.js", "port": 8081, "webapp": "./rufs-base-es6/webapp"},
 			{"path": "../rufs-base-es6/AuthenticationMicroService.js", "port": 8082},
 			{"path": "../rufs-base-es6/RufsMicroService.js", "port": 8083},
-			{"path": "../rufs-crud-es6/CrudMicroService.js", "port": 8084},
+			{"path": "../rufs-base-es6/DocumentMicroService.js", "port": 8084},
+			{"path": "../rufs-crud-es6/CrudMicroService.js", "port": 8085},
 //*/
 		],
 		"cmds": [
@@ -64,7 +65,8 @@ catch(err => {
 			"nodejs --experimental-modules --loader ./rufs-base-es6/custom-loader.mjs ./rufs-base-es6/RufsServiceMicroService.js --port=8081 --webapp=./rufs-base-es6/webapp",
 			"nodejs --experimental-modules --loader ./rufs-base-es6/custom-loader.mjs ./rufs-base-es6/AuthenticationMicroService.js --port=8082",
 			"nodejs --experimental-modules --loader ./rufs-base-es6/custom-loader.mjs ./rufs-base-es6/RufsMicroService.js --port=8083",
-			"nodejs --experimental-modules --loader ./rufs-base-es6/custom-loader.mjs ./rufs-crud-es6/CrudMicroService.js --port=8084",
+			"nodejs --experimental-modules --loader ./rufs-base-es6/custom-loader.mjs ./rufs-base-es6/DocumentMicroService.js --port=8084",
+			"nodejs --experimental-modules --loader ./rufs-base-es6/custom-loader.mjs ./rufs-crud-es6/CrudMicroService.js --port=8085",
 //*/
 		],
 		"routes": [
@@ -76,7 +78,8 @@ catch(err => {
 			{"sourcePath": "rufs_service", "target": "http://localhost:8081"},
 			{"sourcePath": "authc", "target": "http://localhost:8082"},
 			{"sourcePath": "rufs", "target": "http://localhost:8083"},
-			{"sourcePath": "crud", "target": "http://localhost:8084"},
+			{"sourcePath": "document", "target": "http://localhost:8084"},
+			{"sourcePath": "crud", "target": "http://localhost:8085"},
 		]
 	};
 

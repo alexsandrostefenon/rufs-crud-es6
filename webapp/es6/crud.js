@@ -8,8 +8,8 @@ class ServerConnectionService extends ServerConnectionUI {
 		super($locale, $route, $rootScope, $q, $timeout, $controllerProvider, $routeProvider);
     }
 
-    login(server, user, password, callbackPartial, dbUri) {
-        return super.login(server, user, password, CrudServiceUI, callbackPartial, dbUri);
+    login(server, path, user, password, callbackPartial, dbUri) {
+        return super.login(server, path, user, password, CrudServiceUI, callbackPartial, dbUri);
     }
 
 }
@@ -32,7 +32,9 @@ class LoginController {
     }
 
     login() {
-    	return this.serverConnection.login(this.server, this.user.toLowerCase(), this.password, message => this.message = message, this.dbUri);
+    	// TODO : resolve path to load from UI
+    	this.path = "";
+    	return this.serverConnection.login(this.server, this.path, this.user.toLowerCase(), this.password, message => this.message = message, this.dbUri);
     }
 
 }

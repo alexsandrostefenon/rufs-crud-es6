@@ -77,19 +77,9 @@ class CrudController extends CrudCommom {
     get(primaryKey) {
     	return super.get(primaryKey).then(response => {
 			// monta a lista dos CrudItem
-			const list = this.serverConnection.getForeignExportRufsServicesFromService(this.rufsService.params.name); // [{table, field}]
-			
-			for (let item of list) {
-				let rufsService = this.serverConnection.services[item.table];
-				
-				for (let [fieldName, field] of Object.entries(rufsService.fields)) {
-					if (field.title != undefined && field.title.length > 0) {
-				        // serverConnection, serviceName, fieldName, primaryKeyForeign, title, numMaxItems, queryCallback, selectCallback
-				    	this.listItemCrud.push(new CrudItem(this.serverConnection, item.table, fieldName, this.primaryKey));
-					}
-				}
-			}
-			
+			if (this.rufsService.fields.oneToMany != undefined)
+				for (let item of this.rufsService.fields.oneToMany.list)
+					this.listItemCrud.push(new CrudItem(this.serverConnection, item.table, item.field, this.primaryKey));
 			this.listItemCrudJson.forEach(item => item.get(this.instance));
 			this.listObjCrudJson.forEach(item => item.get(this.instance));
 			this.listCrudJsonArray.forEach(item => item.get(this.instance));

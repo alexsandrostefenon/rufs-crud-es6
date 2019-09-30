@@ -1,4 +1,4 @@
-import {RufsService, ServerConnection} from "/es6/ServerConnection.js";
+import {HttpRestRequest, RufsService, ServerConnection} from "/es6/ServerConnection.js";
 import {CrudController} from "./CrudController.js";
 
 class CrudServiceUI extends RufsService {
@@ -91,14 +91,15 @@ class CrudServiceUI extends RufsService {
 	queryRemote(params) {
     	return super.queryRemote(params).then(list => {
     		this.listStr = this.buildListStr(this.list);
-    		const listForeignExport = this.serverConnection.getForeignExportRufsServicesFromService(this.name); // [{table, field}]
             // também atualiza a lista de nomes de todos os serviços que dependem deste
-			for (let item of listForeignExport) {
-				let service = this.serverConnection.services[item.table];
-		        console.log("[CrudServiceUI] queryRemote, update listStr from", service.label, service.list.length, "by", this.label, this.list.length);
-    			service.listStr = service.buildListStr(service.list);
+			if (this.fields.oneToMany != undefined) {
+				for (let item of this.fields.oneToMany.list) {
+					let service = this.serverConnection.services[item.table];
+					console.log("[CrudServiceUI] queryRemote, update listStr from", service.label, service.list.length, "by", this.label, this.list.length);
+					service.listStr = service.buildListStr(service.list);
+				}
 			}
-			
+
 			return list;
     	});
 	}
@@ -274,12 +275,16 @@ class ServerConnectionUI extends ServerConnection {
 		});
     }
     // public
-    login(server, user, password, RufsServiceClass, callbackPartial, dbUri) {
+    login(server, path, user, password, RufsServiceClass, callbackPartial, dbUri) {
     	if (server == null || server.length == 0) {
     		server = window.location.origin;
     	}
 
-        return super.login(server, user, password, RufsServiceClass, callbackPartial, dbUri).then(loginResponse => this.loginDone());
+    	if (path == null || path.length == 0) {
+    		path = window.location.pathname;
+    	}
+
+        return super.login(server, path, user, password, RufsServiceClass, callbackPartial, dbUri).then(loginResponse => this.loginDone());
     }
 
     logout() {
