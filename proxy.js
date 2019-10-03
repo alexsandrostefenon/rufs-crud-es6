@@ -83,7 +83,7 @@ catch(err => {
 		]
 	};
 
-	fsPromises.writeFile("proxy-conf.json", JSON.stringify(defaultConfig));
+	fsPromises.writeFile("proxy-conf.json", JSON.stringify(defaultConfig, null, "\t"));
 	return defaultConfig;
 }).
 then(config => {

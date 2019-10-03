@@ -95,8 +95,11 @@ class CrudServiceUI extends RufsService {
 			if (this.fields.oneToMany != undefined) {
 				for (let item of this.fields.oneToMany.list) {
 					let service = this.serverConnection.services[item.table];
-					console.log("[CrudServiceUI] queryRemote, update listStr from", service.label, service.list.length, "by", this.label, this.list.length);
-					service.listStr = service.buildListStr(service.list);
+
+					if (service != undefined) {
+						console.log("[CrudServiceUI] queryRemote, update listStr from", service.label, service.list.length, "by", this.label, this.list.length);
+						service.listStr = service.buildListStr(service.list);
+					}
 				}
 			}
 
@@ -244,8 +247,7 @@ class ServerConnectionUI extends ServerConnection {
 					route.templateUrl = "crud/templates/crud.html";
 				}
 				
-				let path = "./";//"../";
-//				if (route.controller.indexOf("/") < 0) path = "../crud/es6/";
+				let path = route.controller.startsWith("/") ? "" : "./";
 
 				let promise = import(path + route.controller + ".js").then(module => {
 					const controllerName = route.controller.substring(route.controller.lastIndexOf("/")+1);
