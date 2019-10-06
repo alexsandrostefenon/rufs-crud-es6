@@ -77,9 +77,20 @@ class CrudController extends CrudCommom {
     get(primaryKey) {
     	return super.get(primaryKey).then(response => {
 			// monta a lista dos CrudItem
-			if (this.rufsService.fields.oneToMany != undefined)
-				for (let item of this.rufsService.fields.oneToMany.list)
-					this.listItemCrud.push(new CrudItem(this.serverConnection, item.table, item.field, this.primaryKey));
+			if (this.rufsService.fields.oneToMany != undefined) {
+				for (let item of this.rufsService.fields.oneToMany.list) {
+					let field = this.rufsService.fields[item.field];
+
+					if (field != undefined) {
+						console.log(`[crudController.get] : checking CrudItem for ${item.field} to table ${item.table}`, this.rufsService.fields);
+						if (field.title != undefined)
+							this.listItemCrud.push(new CrudItem(this.serverConnection, item.table, item.field, this.primaryKey));
+					} else {
+						console.error(`[crudController.get] : invalid CrudItem configuration for table ${this.rufsService.params.name} : wrong field ${item.field} to table ${item.table}`, this.rufsService.fields);
+					}
+				}
+			}
+
 			this.listItemCrudJson.forEach(item => item.get(this.instance));
 			this.listObjCrudJson.forEach(item => item.get(this.instance));
 			this.listCrudJsonArray.forEach(item => item.get(this.instance));

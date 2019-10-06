@@ -4,6 +4,7 @@ import {RufsServiceUtils} from "/es6/ServerConnection.js";
 class CrudItem extends CrudCommom {
 
 	constructor(serverConnection, serviceName, fieldName, primaryKeyForeign, title, numMaxItems, queryCallback, selectCallback) {
+		console.log(`[CrudItem.constructor] : ${serviceName}, ${fieldName}, ${title}`, primaryKeyForeign);
     	super(serverConnection, serverConnection.services[serviceName], {}, 1);
 		this.fieldName = fieldName;
 		const field = this.fields[fieldName];
