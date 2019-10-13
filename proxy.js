@@ -37,7 +37,7 @@ class RufsProxy {
 		}
 
 		for (let route of config.routes) {
-			this.proxy.register("localhost/" + route.sourcePath, route.target);
+			this.proxy.register(config.host + "/" + route.sourcePath, route.target);
 		}
 	}
 

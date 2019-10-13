@@ -57,7 +57,13 @@ class CrudItem extends CrudCommom {
 			this.query();
 		}
 	}
-	
+
+    validateFieldChange(fieldName, newValue, oldValue) {
+    	let ret = super.validateFieldChange(fieldName, newValue, oldValue);
+    	if (ret == true && this.selectCallback != undefined) this.selectCallback(fieldName);
+    	return ret;
+    }
+
 	remove(primaryKey) {
         // data may be null
 		return super.remove(primaryKey).then(data => this.query());
