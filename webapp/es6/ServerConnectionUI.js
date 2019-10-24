@@ -1,4 +1,4 @@
-import {HttpRestRequest, RufsService, ServerConnection} from "/es6/ServerConnection.js";
+import {HttpRestRequest, RufsServiceUtils, RufsService, ServerConnection} from "/es6/ServerConnection.js";
 import {CrudController} from "./CrudController.js";
 
 class CrudServiceUI extends RufsService {
@@ -91,15 +91,15 @@ class CrudServiceUI extends RufsService {
 	queryRemote(params) {
     	return super.queryRemote(params).then(list => {
     		this.listStr = this.buildListStr(this.list);
+    		const dependents = RufsServiceUtils.getDependents(this.serverConnection.services, this.name);
+    		const listProcessed = [];
             // também atualiza a lista de nomes de todos os serviços que dependem deste
-			if (this.fields.oneToMany != undefined) {
-				for (let item of this.fields.oneToMany.list) {
+			for (let item of dependents) {
+				if (listProcessed.includes(item.table) == false) {
 					let service = this.serverConnection.services[item.table];
-
-					if (service != undefined) {
-						console.log("[CrudServiceUI] queryRemote, update listStr from", service.label, service.list.length, "by", this.label, this.list.length);
-						service.listStr = service.buildListStr(service.list);
-					}
+					console.log("[CrudServiceUI] queryRemote, update listStr from", service.label, service.list.length, "by", this.label, this.list.length);
+					service.listStr = service.buildListStr(service.list);
+					listProcessed.push(item.table);
 				}
 			}
 

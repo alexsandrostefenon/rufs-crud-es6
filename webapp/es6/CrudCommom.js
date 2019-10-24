@@ -4,7 +4,7 @@ import {ServerConnectionUI} from "./ServerConnectionUI.js";
 class CrudCommom extends CrudUiSkeleton {
 
 	constructor(serverConnection, rufsService) {
-		super(serverConnection, rufsService.params.name, rufsService.params.fields);
+		super(serverConnection, rufsService.name, rufsService.params.fields);
 		this.rufsService = rufsService;
 		this.list = this.rufsService.list;
 		this.rufsService.addRemoteListener(this);
