@@ -1,5 +1,5 @@
 import {CaseConvert} from "/es6/CaseConvert.js";
-import {RufsServiceUtils} from "/es6/ServerConnection.js";
+import {RufsSchema} from "/es6/DataStore.js";
 import {CrudCommom} from "./CrudCommom.js";
 import {CrudItem} from "./CrudItem.js";
 import {CrudItemJson} from "./CrudItemJson.js";
@@ -78,7 +78,7 @@ class CrudController extends CrudCommom {
     get(primaryKey) {
     	return super.get(primaryKey).then(response => {
 			// monta a lista dos CrudItem
-    		const dependents = RufsServiceUtils.getDependents(this.serverConnection.services, this.rufsService.name);
+    		const dependents = RufsSchema.getDependents(this.serverConnection.services, this.rufsService.name);
 			for (let item of dependents) {
 				const rufsServiceOther = this.serverConnection.services[item.table];
 

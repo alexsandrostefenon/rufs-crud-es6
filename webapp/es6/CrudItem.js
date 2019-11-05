@@ -1,5 +1,5 @@
 import {CrudCommom} from "./CrudCommom.js";
-import {RufsServiceUtils} from "/es6/ServerConnection.js";
+import {RufsSchema} from "/es6/DataStore.js";
 
 class CrudItem extends CrudCommom {
 
@@ -13,7 +13,7 @@ class CrudItem extends CrudCommom {
 		this.numMaxItems = (numMaxItems != undefined && numMaxItems != null) ? numMaxItems : 999;
 		this.queryCallback = queryCallback;
 		this.selectCallback = selectCallback;
-		this.foreignKey = RufsServiceUtils.getForeignKeyFromPrimaryKeyForeign(this, primaryKeyForeign, this.fieldName);
+		this.foreignKey = RufsSchema.getForeignKeyFromPrimaryKeyForeign(this, primaryKeyForeign, this.fieldName);
 		
 		for (let [_fieldName, value] of Object.entries(this.foreignKey)) {
 			this.fields[_fieldName].hiden = true;
@@ -33,7 +33,7 @@ class CrudItem extends CrudCommom {
 	}
 
 	clone(primaryKeyForeign) {
-		this.foreignKey = RufsServiceUtils.getForeignKeyFromPrimaryKeyForeign(this, primaryKeyForeign, this.fieldName);
+		this.foreignKey = RufsSchema.getForeignKeyFromPrimaryKeyForeign(this, primaryKeyForeign, this.fieldName);
 
 		if (this.isClonable == true) {
 			let count = 0;

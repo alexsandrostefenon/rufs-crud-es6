@@ -1,4 +1,5 @@
-import {HttpRestRequest, RufsServiceUtils, RufsService, ServerConnection} from "/es6/ServerConnection.js";
+import {HttpRestRequest, RufsService, ServerConnection} from "/es6/ServerConnection.js";
+import {RufsSchema} from "/es6/DataStore.js";
 import {CrudController} from "./CrudController.js";
 
 class CrudServiceUI extends RufsService {
@@ -91,7 +92,7 @@ class CrudServiceUI extends RufsService {
 	queryRemote(params) {
     	return super.queryRemote(params).then(list => {
     		this.listStr = this.buildListStr(this.list);
-    		const dependents = RufsServiceUtils.getDependents(this.serverConnection.services, this.name);
+    		const dependents = RufsSchema.getDependents(this.serverConnection.services, this.name);
     		const listProcessed = [];
             // também atualiza a lista de nomes de todos os serviços que dependem deste
 			for (let item of dependents) {
