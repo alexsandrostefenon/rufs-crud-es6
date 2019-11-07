@@ -60,7 +60,18 @@ class CrudItem extends CrudCommom {
 
     validateFieldChange(fieldName, newValue, oldValue) {
     	let ret = super.validateFieldChange(fieldName, newValue, oldValue);
-    	if (ret == true && this.selectCallback != undefined) this.selectCallback(fieldName);
+
+    	if (ret == true && this.selectCallback != undefined) {
+    		if (newValue == undefined) 
+    			newValue = this.instance[fieldName];
+    		else
+    			this.instance[fieldName] = newValue;
+
+    		this.selectCallback(fieldName);
+			// update UI
+			this.setValues(this.instance);
+    	}
+
     	return ret;
     }
 
