@@ -12,6 +12,26 @@ class RufsProxy {
 	constructor(config) {
 		this.config = config;
 		this.proxy = new Proxy({port: config.port});
+
+		if (config.host == "0.0.0.0") {
+			this.proxy.addResolver((host, url, req) => {
+//				console.log("host:", host);
+//				console.log("url:", url);
+				let ret = {};
+				
+				if (url.length > 0) {
+					const sourcePath = url.substring(1);
+					const route = config.routes.find(item => sourcePath.startsWith(item.sourcePath+"/"));
+
+					if (route != undefined) {
+						ret.url = route.target;
+						req.url = req.url.substring(route.sourcePath.length + 1);
+					}
+				}
+
+				return ret;
+			});
+		}
 	}
 
 	async start(config) {
@@ -37,7 +57,7 @@ class RufsProxy {
 		}
 
 		for (let route of config.routes) {
-			this.proxy.register(config.host + "/" + route.sourcePath, route.target);
+			this.proxy.register(config.host + "/" + route.sourcePath, route.target+"/");
 		}
 	}
 
@@ -49,7 +69,7 @@ catch(err => {
 	console.log(err);
 	
 	const defaultConfig = {
-		"host": "localhost",
+		"host": "0.0.0.0",
 		"port": 8080,
 		"modules": [
 //*

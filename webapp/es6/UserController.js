@@ -27,7 +27,7 @@ class UserController extends CrudController {
     	this.listItemCrudJson.push(new CrudItemJson(this, fieldsRoles, "roles", "Controle de Acesso", this.serverConnection, nameOptionsRoles));
     	//
     	// Menu do usuário
-//    	$routeProvider.when("/app/:name/:action", {templateUrl: "crud/templates/crud.html", controller: "CrudController", controllerAs: "vm"});
+//    	$routeProvider.when("/app/:name/:action", {templateUrl: "/crud/templates/crud.html", controller: "CrudController", controllerAs: "vm"});
     	const fieldsMenu = {
     			"menu":{"defaultValue":"action", "options":["action","help","configuration","report","form"]},
     			"label":{},
@@ -45,7 +45,7 @@ class UserController extends CrudController {
 */
     	const fieldsRoute = {
     			"path":{"primaryKey":true, "defaultValue":"/app/xxx/:action"},
-    			"templateUrl":{"defaultValue":"crud/templates/crud.html"},
+    			"templateUrl":{"defaultValue":"/crud/templates/crud.html"},
     			"controller":{"defaultValue":"CrudController"},
     			};
     	// fields, instanceExternal, fieldNameExternal, title, serverConnection, selectCallback

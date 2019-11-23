@@ -15,7 +15,7 @@ class CrudCommom extends CrudUiSkeleton {
 		super.process(action, params);
 
 		if (action == "search") {
-			this.templateModel = "crud/templates/crud-model_search.html";
+			this.templateModel = "/crud/templates/crud-model_search.html";
 			
 			if (params.filter != undefined || params.filterRange != undefined || params.filterRangeMin != undefined || params.filterRangeMax != undefined) {
 				if (params.filterRange != undefined) {
@@ -37,18 +37,16 @@ class CrudCommom extends CrudUiSkeleton {
 				this.paginate(params.pagination);
 			}
 		} else if (action == "new") {
-			this.templateModel = "crud/templates/crud-model_new.html";
+			this.templateModel = "/crud/templates/crud-model_new.html";
 			this.setValues(params.overwrite);
 		} else if (action == "view") {
-			this.templateModel = "crud/templates/crud-model_view.html";
+			this.templateModel = "/crud/templates/crud-model_view.html";
 			this.primaryKey = this.rufsService.getPrimaryKey(params.primaryKey);
 			this.get(this.primaryKey);
 		} else if (action == "edit") {
-			this.templateModel = "crud/templates/crud-model_edit.html";
+			this.templateModel = "/crud/templates/crud-model_edit.html";
 			this.primaryKey = this.rufsService.getPrimaryKey(params.primaryKey);
 			this.get(this.primaryKey);
-		} else {
-//			throw new Error(`CrudCommom.constructor : invalid action : ${action}`);
 		}
 	}
 

@@ -226,7 +226,7 @@ class ServerConnectionUI extends ServerConnection {
         // routes and modules
 //		var config = JSON.parse(this.user.config);
 		const promises = [];
-		this.$routeProvider.when('/app/login',{templateUrl:'crud/templates/login.html', controller:'LoginController', controllerAs: "vm"});
+		this.$routeProvider.when('/app/login',{templateUrl:"/crud/templates/login.html", controller:'LoginController', controllerAs: "vm"});
 
 		if (this.user.routes != undefined && this.user.routes != null) {
 			let routes = [];
@@ -245,7 +245,7 @@ class ServerConnectionUI extends ServerConnection {
 
 			for (let route of routes) {
 				if (route.templateUrl == undefined || route.templateUrl.length == 0) {
-					route.templateUrl = "crud/templates/crud.html";
+					route.templateUrl = "/crud/templates/crud.html";
 				}
 				
 				let path = route.controller.startsWith("/") ? "" : "./";
@@ -268,7 +268,7 @@ class ServerConnectionUI extends ServerConnection {
 
 		return Promise.all(promises).then(() => {
 			console.log("Promise.all:", promises);
-			this.$routeProvider.when("/app/:name/:action", {templateUrl: "crud/templates/crud.html", controller: "CrudController", controllerAs: "vm"});
+			this.$routeProvider.when("/app/:name/:action", {templateUrl: "/crud/templates/crud.html", controller: "CrudController", controllerAs: "vm"});
 			this.$routeProvider.otherwise({redirectTo: '/app/login'});
 
 	        if (this.user.path != undefined && this.user.path != null && this.user.path.length > 0) {

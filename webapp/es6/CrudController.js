@@ -116,7 +116,7 @@ class CrudController extends CrudCommom {
 	update() {
 		return super.update().then(response => {
 			var primaryKey = this.rufsService.getPrimaryKey(response.data);
-
+			// TODO : load saveAndExit from method process(action,params)
 			if (this.rufsService.params.saveAndExit != false) {
 				this.goToSearch();
 			} else {
@@ -134,7 +134,7 @@ class CrudController extends CrudCommom {
 			for (let item of this.listItemCrud) {
 				item.clone(primaryKey);
 			}
-			
+			// TODO : load saveAndExit from method process(action,params)
 			if (this.rufsService.params.saveAndExit != false) {
 				this.goToSearch();
 			} else {

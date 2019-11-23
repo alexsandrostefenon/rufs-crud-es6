@@ -21,7 +21,7 @@
 
 	<div ng-show="vm.activeTab == 1" class="panel-body">
 		<form id="{{vm.formId}}" name="{{vm.formId}}" class="form-horizontal" role="form">
-			<div ng-include="'crud/templates/crud-model_form_body_filter.html'"></div>
+			<div ng-include="'/crud/templates/crud-model_form_body_filter.html'"></div>
 
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
@@ -35,7 +35,7 @@
 
 	<div ng-show="vm.activeTab == 2" class="panel-body">
 		<form id="{{vm.formId}}-aggregate" name="{{vm.formId}}-aggregate" class="form-horizontal" role="form">
-			<div ng-include="'crud/templates/crud-model_form_body_aggregate.html'"></div>
+			<div ng-include="'/crud/templates/crud-model_form_body_aggregate.html'"></div>
 
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
@@ -49,7 +49,7 @@
 
 	<div ng-show="vm.activeTab == 3" class="panel-body">
 		<form id="{{vm.formId}}-sort" name="{{vm.formId}}-sort" class="form-horizontal" role="form">
-			<div ng-include="'crud/templates/crud-model_form_body_sort.html'"></div>
+			<div ng-include="'/crud/templates/crud-model_form_body_sort.html'"></div>
 
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
