@@ -1,4 +1,5 @@
 # rufs-crud-es6
+
 Restful Utilities for Full Stack - CRUD WebApp
 
 You need NodeJs installed and PostgreSql server already running with your database.
@@ -9,14 +10,17 @@ Requires browser with support to dynamic ES6 modules (tested with Chrome version
 
 ## First Step
 
-Clone this repository and open terminal, changing path to local repository folder.
+Open terminal and clone this repository with `git clone https://github.com/alexsandrostefenon/rufs-crud-es6`.
 
-### Build
+To download the required dependencies then
 
-then `npm install` to download the required dependencies.
+`npm install ./rufs-crud-es6` 
 
-cd ..
-ln -s ./rufs-base-es6/node_modules/rufs-base-es6 ./
+or
+
+`yarnpkg install --cwd ./rufs-crud-es6 --modules-folder $NODE_MODULES_PATH`
+
+where $NODE_MODULES_PATH point to your desired node_modules folder destination.
 
 ### Run Ecosystem
 
@@ -24,13 +28,13 @@ expose database information, like :
 
 export PGHOST=localhost;
 export PPORT=5432;
-export PGDATABASE=<<database name>>;
-export PGUSER=<<database user>>;
-export PGPASSWORD=<<database password>>;
+export PGDATABASE=<database name>;
+export PGUSER=<database user>;
+export PGPASSWORD=<database password>;
 
 execute rufs-proxy to load and start minimal microservices :
 
-`nodejs --inspect --experimental-modules --loader ./rufs-base-es6/custom-loader.mjs ./rufs-crud-es6/proxy.js`
+`nodejs --inspect --experimental-modules --loader $NODE_MODULES_PATH/rufs-base-es6/custom-loader.mjs ./rufs-crud-es6/proxy.js`
 
 ## Web application
 

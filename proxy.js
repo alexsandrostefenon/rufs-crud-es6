@@ -1,11 +1,13 @@
 import fs from "fs";
 import Proxy from "redbird";
 import {exec} from "child_process";
+import {MicroServiceServer} from "../rufs-base-es6/MicroServiceServer.js";
 
 const fsPromises = fs.promises;
 // TODO : only until nodejs needs custom-loader.mjs to resolve import(module)
 import pg from "pg";
 import pgCamelCase from "pg-camelcase";
+import { runInNewContext } from "vm";
 
 class RufsProxy {
 
@@ -35,20 +37,33 @@ class RufsProxy {
 	}
 
 	async start(config) {
-		console.log(`starting RufsProxy...`);
+        console.log(`starting RufsProxy...`);
+        
+        {
+            const paths = MicroServiceServer.getArg("add-modules", "").split(",");
 
-		for (let entry of config.modules) {
-			console.log(`...loading module ${entry.path}...`);
-			let module = await import(entry.path);
-			
-			for (let name in module) {
-				if (name.indexOf("MicroService") >= 0) {
-					let microServiceClass = module[name];
-					let instance = new microServiceClass({port: entry.port, webapp: entry.webapp});
-					instance.listen();
-					console.log(`...loaded module ${entry.path}.`);
+            for (const path of paths) {
+                let entry = {};
+                entry.path = path;
+                config.modules.push(entry);
+            }
+		}
+		
+		let port = config.port;
+
+		for (const entry of config.modules) {
+				console.log(`loading module ${entry.path}...`);
+				const module = await import(entry.path);
+
+				for (const name in module) {
+					if (name.indexOf("MicroService") >= 0) {
+						const microServiceClass = module[name];
+						const instance = new microServiceClass({port: ++port, webapp: entry.webapp});
+						await instance.listen();
+						console.log(`...loaded module ${entry.path}.`);
+						config.routes.push({sourcePath: instance.config.appName, target: `http://localhost:${instance.config.port}`});
+					}
 				}
-			}
 		}
 
 		for (let cmd of config.cmds) {
@@ -73,11 +88,11 @@ catch(err => {
 		"port": 8080,
 		"modules": [
 //*
-			{"path": "../rufs-base-es6/RufsServiceMicroService.js", "port": 8081, "webapp": "./rufs-base-es6/webapp"},
-			{"path": "../rufs-base-es6/AuthenticationMicroService.js", "port": 8082},
-			{"path": "../rufs-base-es6/RufsMicroService.js", "port": 8083},
-			{"path": "../rufs-base-es6/DocumentMicroService.js", "port": 8084},
-			{"path": "../rufs-crud-es6/CrudMicroService.js", "port": 8085},
+			{"path": "../rufs-base-es6/RufsServiceMicroService.js", "webapp": "./rufs-base-es6/webapp"},//, "port": 8081
+			{"path": "../rufs-base-es6/AuthenticationMicroService.js"},//, "port": 8082
+			{"path": "../rufs-base-es6/RufsMicroService.js"},//, "port": 8083
+			{"path": "../rufs-base-es6/DocumentMicroService.js"},//, "port": 8084
+			{"path": "../rufs-crud-es6/CrudMicroService.js"},//, "port": 8085
 //*/
 		],
 		"cmds": [
@@ -95,11 +110,11 @@ catch(err => {
 			{"sourcePath": "lib", "target": "http://localhost:8081/lib"},
 			{"sourcePath": "fonts", "target": "http://localhost:8081/fonts"},
 			
-			{"sourcePath": "rufs_service", "target": "http://localhost:8081"},
-			{"sourcePath": "authc", "target": "http://localhost:8082"},
-			{"sourcePath": "rufs", "target": "http://localhost:8083"},
-			{"sourcePath": "document", "target": "http://localhost:8084"},
-			{"sourcePath": "crud", "target": "http://localhost:8085"},
+//			{"sourcePath": "rufs_service", "target": "http://localhost:8081"},
+//			{"sourcePath": "authc", "target": "http://localhost:8082"},
+//			{"sourcePath": "rufs", "target": "http://localhost:8083"},
+//			{"sourcePath": "document", "target": "http://localhost:8084"},
+//			{"sourcePath": "crud", "target": "http://localhost:8085"},
 		]
 	};
 
