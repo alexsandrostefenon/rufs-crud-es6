@@ -26,7 +26,7 @@ class RufsServiceController extends CrudController {
     			"comment":{},
     			"title":{},
     			"isClonable":{"type": "b"},
-    			"unique":{"type": "b"},
+    			"unique":{},
     			"updatable":{"type": "b"},
     			"hiden":{"type": "b"},
     			"readOnly":{"type": "b"},
