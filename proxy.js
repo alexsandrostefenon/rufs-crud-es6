@@ -13,7 +13,7 @@ class RufsProxy {
 
 	constructor(config) {
 		this.config = config;
-		this.proxy = new Proxy({port: config.port});
+		this.proxy = new Proxy({port: config.port, ssl: config.ssl});
 
 		if (config.host == "0.0.0.0") {
 			this.proxy.addResolver((host, url, req) => {
