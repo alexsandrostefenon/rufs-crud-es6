@@ -20,8 +20,8 @@ class UserController extends CrudController {
 
     	const nameOptionsRoles = [];
 
-    	for (let item of this.serverConnection.services.rufsService.list) {
-    		nameOptionsRoles.push(item.name);
+    	for (let name in this.serverConnection.services) {
+    		nameOptionsRoles.push(name);
     	}
 
     	this.listItemCrudJson.push(new CrudItemJson(this, fieldsRoles, "roles", "Controle de Acesso", this.serverConnection, nameOptionsRoles));

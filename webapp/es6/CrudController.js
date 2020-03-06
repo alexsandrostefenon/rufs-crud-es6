@@ -59,9 +59,9 @@ class CrudController extends CrudCommom {
 					let field = this.fields[fieldName];
 
 					if (field != undefined) {
-						if (field.type == "i")
+						if (field.type == "integer")
 							obj[fieldName] = Number.parseInt(value);
-						else if (field.type == "n")
+						else if (field.type == "number")
 							obj[fieldName] = Number.parseFloat(value);
 					}
 				}

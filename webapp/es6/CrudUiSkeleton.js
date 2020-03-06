@@ -22,12 +22,12 @@ class CrudUiSkeleton extends DataStoreItem {
 			field.htmlType = "text";
 			field.htmlStep = "any";
 
-			if (field.type == "b") {
+			if (field.type == "boolean") {
 				field.htmlType = "checkbox";
-			} else if (field.type == "i") {
+			} else if (field.type == "integer") {
 				field.htmlType = "number";
 				field.htmlStep = "1";
-			} else if (field.type == "n") {
+			} else if (field.type == "number") {
 				field.htmlType = "number";
 				
 				if (field.precision == 1) {
@@ -45,7 +45,7 @@ class CrudUiSkeleton extends DataStoreItem {
 				field.htmlType = "datetime-local";
 			}
 
-			if (field.options == undefined && field.optionsLabels == undefined && field.type == "s" && field.length == 1 && (field.defaultValue == "S" || field.defaultValue == "N")) {
+			if (field.options == undefined && field.optionsLabels == undefined && field.type == "string" && field.length == 1 && (field.defaultValue == "S" || field.defaultValue == "N")) {
 				field.filterResults = field.options = ["S", "N"];
 				field.filterResultsStr = field.optionsLabels = ["Sim", "Não"];
 			}
@@ -57,8 +57,8 @@ class CrudUiSkeleton extends DataStoreItem {
 			}
 			
 			if (field.label == undefined) {
-				if (field.comment != undefined && field.comment.length <= 30) {
-					field.label = field.comment;
+				if (field.description != undefined && field.description.length <= 30) {
+					field.label = field.description;
 				} else {
 					let label = this.serverConnection.convertCaseAnyToLabel(fieldName);
 					field.label = label;
