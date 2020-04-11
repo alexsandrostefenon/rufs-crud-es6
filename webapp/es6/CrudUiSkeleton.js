@@ -15,7 +15,7 @@ class CrudUiSkeleton extends DataStoreItem {
 	}
 
 	updateFields() {
-		// type: "i", service: "serviceName", defaultValue: null, hiden: false, required: false, flags: ["a", "b"], readOnly: false
+		// type: "i", service: "serviceName", default: null, hiden: false, required: false, flags: ["a", "b"], readOnly: false
 		for (let fieldName in this.fields) {
 			let field = this.fields[fieldName];
 			field.filter = {};
@@ -45,7 +45,7 @@ class CrudUiSkeleton extends DataStoreItem {
 				field.htmlType = "datetime-local";
 			}
 
-			if (field.options == undefined && field.optionsLabels == undefined && field.type == "string" && field.length == 1 && (field.defaultValue == "S" || field.defaultValue == "N")) {
+			if (field.options == undefined && field.optionsLabels == undefined && field.type == "string" && field.length == 1 && (field.default == "S" || field.default == "N")) {
 				field.filterResults = field.options = ["S", "N"];
 				field.filterResultsStr = field.optionsLabels = ["Sim", "Não"];
 			}
@@ -176,6 +176,7 @@ class CrudUiSkeleton extends DataStoreItem {
 	}
 	
     validateFieldChange(fieldName, newValue, oldValue) {
+    	console.log(`[CrudUiSkeleton.validateFieldChange(fieldName=${fieldName}, newValue=${newValue}, oldValue=${oldValue})] this.instance[${fieldName}] = ${this.instance[fieldName]}`);
     	return true;
     }
 

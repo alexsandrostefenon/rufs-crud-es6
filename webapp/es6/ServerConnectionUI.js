@@ -1,4 +1,4 @@
-import {HttpRestRequest, RufsService, ServerConnection} from "/es6/ServerConnection.js";
+import {RufsService, ServerConnection} from "/es6/ServerConnection.js";
 import {RufsSchema} from "/es6/DataStore.js";
 import {CrudController} from "./CrudController.js";
 
@@ -194,22 +194,6 @@ class ServerConnectionUI extends ServerConnection {
 				}
 
 				this.menu[menuName].unshift(menuItem);
-			}
-		}
-		// system menu
-		if (this.user.showSystemMenu == true) {
-			for (let serviceName in this.services) {
-				let service = this.services[serviceName];
-	    		let menuName = service.params.menu || "Services";
-
-	    		if (menuName.length > 0) {
-	    			if (this.menu[menuName] == undefined) {
-	    				this.menu[menuName] = [];
-	    			}
-
-	    			let menuItem = {path: service.path + "/search", label: service.label};
-	    			this.menu[menuName].unshift(menuItem);
-	    		}
 			}
 		}
     	// tradução

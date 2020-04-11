@@ -1,3 +1,4 @@
+import {Filter} from "/es6/DataStore.js";
 import {Utils} from "/es6/Utils.js";
 import {CaseConvert} from "/es6/CaseConvert.js";
 import {CrudUiSkeleton} from "./CrudUiSkeleton.js";
@@ -22,7 +23,7 @@ class CrudItemJson extends CrudUiSkeleton {
 		this.nameOptions = nameOptions;
 		this.buildFieldFilterResults();
 	}
-	
+
 	get(parentInstance) {
 		var objItemsStr = parentInstance[this.fieldNameExternal];
 
@@ -67,7 +68,7 @@ class CrudItemJson extends CrudUiSkeleton {
 		this.parent.instance[this.fieldNameExternal] = JSON.stringify(objItems);
 		this.restrictNameOptions();
 		this.parent.rufsService.params.saveAndExit = false;
-		return this.parent.update();
+		return this.parent.update().then(parentInstance => this.get(parentInstance));
 	}
 
 	save() {
@@ -89,16 +90,18 @@ class CrudItemJson extends CrudUiSkeleton {
 			this.list.push(this.instance);
 		}
 
-		this.updateParent();
+		return this.updateParent();
 	}
 
-	remove(index) {
+	remove(name) {
+		const index = Filter.findPos(this.list, {"_name": name});
 		this.list.splice(index, 1);
 		this.updateParent();
 	}
 
-	edit(index) {
+	edit(name) {
 		this.clear();
+		const index = Filter.findPos(this.list, {"_name": name});
 		var item = this.list[index];
 
 		if (this.nameOptions != undefined) {
@@ -109,7 +112,9 @@ class CrudItemJson extends CrudUiSkeleton {
 		this.setValues(item);
 	}
 
-	moveUp(index) {
+	moveUp(name) {
+		const index = Filter.findPos(this.list, {"_name": name});
+
 		if (index > 0) {
 			var tmp = this.list[index-1];
 			this.list[index-1] = this.list[index];
@@ -119,7 +124,9 @@ class CrudItemJson extends CrudUiSkeleton {
 		this.updateParent();
 	}
 
-	moveDown(index) {
+	moveDown(name) {
+		const index = Filter.findPos(this.list, {"_name": name});
+
 		if (index < (this.list.length-1)) {
 			var tmp = this.list[index+1];
 			this.list[index+1] = this.list[index];

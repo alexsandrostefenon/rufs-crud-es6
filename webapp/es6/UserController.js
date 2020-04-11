@@ -11,11 +11,11 @@ class UserController extends CrudController {
 //      debugger;
     	// Regras de acesso aos serviços
 		const fieldsRoles = {
-    			"read":{type:"b", "defaultValue":true},
-    			"query":{type:"b", "defaultValue":true},
-    			"create":{type:"b", "defaultValue":false},
-    			"update":{type:"b", "defaultValue":false},
-    			"delete":{type:"b", "defaultValue":false}
+    			"read":{type:"boolean", "default":true},
+    			"query":{type:"boolean", "default":true},
+    			"create":{type:"boolean", "default":false},
+    			"update":{type:"boolean", "default":false},
+    			"delete":{type:"boolean", "default":false}
     			};
 
     	const nameOptionsRoles = [];
@@ -29,28 +29,75 @@ class UserController extends CrudController {
     	// Menu do usuário
 //    	$routeProvider.when("/app/:name/:action", {templateUrl: "/crud/templates/crud.html", controller: "CrudController", controllerAs: "vm"});
     	const fieldsMenu = {
-    			"menu":{"defaultValue":"action", "options":["action","help","configuration","report","form"]},
+    			"menu":{"default":"action", "options":["action","help","configuration","report","form"]},
     			"label":{},
-    			"path":{"defaultValue":"service/action?filter={}&aggregate={}"}
+    			"path":{"default":"service/action?filter={}&aggregate={}"}
     			};
 
     	this.listItemCrudJson.push(new CrudItemJson(this, fieldsMenu, "menu", "Menu", this.serverConnection));
     	// Configurações Json
 /*
     	var fieldsConfig = {
-    			"modules":{"defaultValue":"es6/CrudController.js"}
+    			"modules":{"default":"es6/CrudController.js"}
     			};
 
     	this.listObjCrudJson.push(new CrudObjJson(this, fieldsConfig, this.instance, "config", "Configurações", this.serverConnection));
 */
     	const fieldsRoute = {
-    			"path":{"primaryKey":true, "defaultValue":"/app/xxx/:action"},
-    			"templateUrl":{"defaultValue":"/crud/templates/crud.html"},
-    			"controller":{"defaultValue":"CrudController"},
+    			"path":{"primaryKey":true, "default":"/app/xxx/:action"},
+    			"templateUrl":{"default":"/crud/templates/crud.html"},
+    			"controller":{"default":"CrudController"},
     			};
     	// fields, instanceExternal, fieldNameExternal, title, serverConnection, selectCallback
     	this.listCrudJsonArray.push(new CrudJsonArray(this, fieldsRoute, "routes", "Rotas de URL AngularJs", this.serverConnection));
 //        this.rufsItemService = new CrudItem(this.serverConnection, "requestService", "request", this.primaryKey, 'Serviços', null, list => onServicesChanged(list), (field, id) => onServiceSelected(field, id));
+    }
+
+    update() {
+        const addDependencies = (serviceName, roles) => {
+            const service = this.serverConnection.services[serviceName];
+
+            for (let [fieldName, field] of Object.entries(service.fields)) {
+                if (field.foreignKeysImport != undefined) {
+                    const dependency = field.foreignKeysImport.table;
+
+                    if (roles[dependency] == undefined) {
+                        roles[dependency] = {};
+                        addDependencies(dependency, roles);
+                    }
+                }
+            }
+        };
+
+        const addMenu = (serviceName, menu) => {
+            /*
+path: 'request/search',
+menu: '{"import":{"menu":"actions","label":"Importar","path":"request/import?overwrite.type=1&overwrite.state=10"},"buy":{"menu":"actions","label":"Compra","path":"request/new?overwrite={\"type\":1,\"state\":10}"},"sale":{"menu":"actions","label":"Venda","path":"request/new?overwrite={\"type\":2,\"state\":10}"},"requestPayment":{"menu":"form","label":"Financeiro","path":"request_payment/search"},"stock":{"menu":"form","label":"Estoque","path":"stock/search"},"product":{"menu":"form","label":"Produtos","path":"product/search"},"person":{"menu":"form","label":"Clientes e Fornecedores","path":"person/search"},"requests":{"menu":"form","label":"Requisições","path":"request/search"},"account":{"menu":"form","label":"Contas","path":"account/search"}}',
+routes : '[{"path":"/app/request/:action","controller":"/nfe/es6/RequestController"}]'
+            */
+            if (menu[serviceName] == undefined) {
+                menu[serviceName] = {"menu": "services", "label": serviceName, "path": `${serviceName}/search`};
+            }
+        }
+
+        const oldRoles = this.original.roles != undefined ? JSON.parse(this.original.roles) : {};
+        const newRoles = this.instance.roles != undefined ? JSON.parse(this.instance.roles) : {};
+        const menu = this.instance.menu != undefined ? JSON.parse(this.instance.menu) : {};
+
+        for (let serviceName in newRoles) {
+            if (oldRoles[serviceName] == undefined) {
+                if (this.instance.path == undefined) {
+                    this.instance.path = `${serviceName}/search`;
+                }
+
+                addDependencies(serviceName, newRoles);
+                addMenu(serviceName, menu);
+            }
+        }
+
+        this.instance.roles = JSON.stringify(newRoles);
+        this.instance.menu = JSON.stringify(menu);
+        return super.update();
     }
 
 }

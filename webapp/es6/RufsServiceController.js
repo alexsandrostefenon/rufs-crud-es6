@@ -9,7 +9,7 @@ class RufsServiceController extends CrudController {
 //		const defaultValues = {type: "s", updatable: true, length: 255, precision: 9, scale: 3, hiden: false, primaryKey: false, required: false};
     	this.rufsServicefields = {
     			"type":{"options": ["s", "i", "b", "n", "datetime-local", "date", "time"]},
-    			"defaultValue":{},
+    			"default":{},
     			"options": {},
     			"optionsLabels": {},
     			"sortType":{"options": ["asc", "desc"]},

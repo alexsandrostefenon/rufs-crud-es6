@@ -24,7 +24,7 @@ class CrudJsonArray extends CrudUiSkeleton {
 	}
 	// private, use in addItem, updateItem and removeItem
 	updateParent() {
-		if (this.parent.fields[this.fieldNameExternal].type == "s") {
+		if (this.parent.fields[this.fieldNameExternal].type == "string") {
 			this.parent.instance[this.fieldNameExternal] = JSON.stringify(this.list);
 		} else {
 			this.parent.instance[this.fieldNameExternal] = this.list;

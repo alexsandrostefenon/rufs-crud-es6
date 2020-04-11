@@ -18,7 +18,7 @@ class CrudItem extends CrudCommom {
 		for (let [_fieldName, value] of Object.entries(this.foreignKey)) {
 			this.fields[_fieldName].hiden = true;
 			this.fields[_fieldName].tableVisible = false;
-			this.fields[_fieldName].defaultValue = value;
+			this.fields[_fieldName].default = value;
 		}
 
 		this.query();

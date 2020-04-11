@@ -32,9 +32,9 @@ export PGDATABASE=<database name>;
 export PGUSER=<database user>;
 export PGPASSWORD=<database password>;
 
-execute rufs-proxy to load and start minimal microservices :
+#execute rufs-proxy to load and start minimal microservices :
 
-`nodejs --inspect --experimental-modules --loader $NODE_MODULES_PATH/rufs-base-es6/custom-loader.mjs ./rufs-crud-es6/proxy.js`
+nodejs --inspect --experimental-modules --loader $NODE_MODULES_PATH/rufs-base-es6/custom-loader.mjs $NODE_MODULES_PATH/rufs-crud-es6/proxy.js;
 
 ## Web application
 
