@@ -92,7 +92,7 @@ class CrudServiceUI extends RufsService {
 	queryRemote(params) {
     	return super.queryRemote(params).then(list => {
     		this.listStr = this.buildListStr(this.list);
-    		const dependents = RufsSchema.getDependents(this.serverConnection.services, this.name);
+    		const dependents = this.serverConnection.getDependents(this.name);
     		const listProcessed = [];
             // também atualiza a lista de nomes de todos os serviços que dependem deste
 			for (let item of dependents) {

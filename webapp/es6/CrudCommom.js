@@ -4,7 +4,7 @@ import {ServerConnectionUI} from "./ServerConnectionUI.js";
 class CrudCommom extends CrudUiSkeleton {
 
 	constructor(serverConnection, rufsService) {
-		super(serverConnection, rufsService.name, rufsService.params.fields);
+		super(serverConnection, rufsService.name, rufsService.schema);
 		this.rufsService = rufsService;
 		this.list = this.rufsService.list;
 		this.rufsService.addRemoteListener(this);
@@ -73,13 +73,9 @@ class CrudCommom extends CrudUiSkeleton {
     	let primaryKey = {};
 
 		if (field.foreignKeysImport != undefined) {
-			// neste caso, obj[fieldName] contém o id do registro de referência
-			// dataForeign, fieldNameForeign, fieldName
-			service = this.serverConnection.getForeignImportRufsService(field);
-			
-	    	if (obj != undefined) {
-				primaryKey = service.getPrimaryKeyFromForeignData(obj, fieldName, field.foreignKeysImport.field);
-	    	}
+			const item = this.serverConnection.getPrimaryKeyForeign(this.rufsService, fieldName, obj);
+			service = this.serverConnection.services[item.table];
+			primaryKey = item.primaryKey;
 		} else {
 			service = this.rufsService;
 			primaryKey = this.rufsService.getPrimaryKey(obj);

@@ -16,7 +16,7 @@ class CrudItemJson extends CrudUiSkeleton {
 		}
 		
 		for (let fieldName in fields) _fields[fieldName] = fields[fieldName];
-		super(serverConnection, fieldNameExternal, _fields);
+		super(serverConnection, fieldNameExternal, {"properties": _fields});
 		this.parent = parent;
 		this.fieldNameExternal = fieldNameExternal;
 		this.title = title;

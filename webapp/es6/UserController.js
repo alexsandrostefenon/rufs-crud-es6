@@ -54,21 +54,6 @@ class UserController extends CrudController {
     }
 
     update() {
-        const addDependencies = (serviceName, roles) => {
-            const service = this.serverConnection.services[serviceName];
-
-            for (let [fieldName, field] of Object.entries(service.fields)) {
-                if (field.foreignKeysImport != undefined) {
-                    const dependency = field.foreignKeysImport.table;
-
-                    if (roles[dependency] == undefined) {
-                        roles[dependency] = {};
-                        addDependencies(dependency, roles);
-                    }
-                }
-            }
-        };
-
         const addMenu = (serviceName, menu) => {
             /*
 path: 'request/search',
@@ -90,7 +75,14 @@ routes : '[{"path":"/app/request/:action","controller":"/nfe/es6/RequestControll
                     this.instance.path = `${serviceName}/search`;
                 }
 
-                addDependencies(serviceName, newRoles);
+                const listDependencies = this.serverConnection.getDependencies(serviceName);
+
+                for (let dependency of listDependencies) {
+                    if (newRoles[dependency] == undefined) {
+                        newRoles[dependency] = {};
+                    }
+                }
+
                 addMenu(serviceName, menu);
             }
         }

@@ -13,7 +13,7 @@ class CrudItem extends CrudCommom {
 		this.numMaxItems = (numMaxItems != undefined && numMaxItems != null) ? numMaxItems : 999;
 		this.queryCallback = queryCallback;
 		this.selectCallback = selectCallback;
-		this.foreignKey = RufsSchema.getForeignKeyFromPrimaryKeyForeign(this, primaryKeyForeign, this.fieldName);
+		this.foreignKey = this.serverConnection.getForeignKey(this, this.fieldName, primaryKeyForeign);
 		
 		for (let [_fieldName, value] of Object.entries(this.foreignKey)) {
 			this.fields[_fieldName].hiden = true;
@@ -33,7 +33,7 @@ class CrudItem extends CrudCommom {
 	}
 
 	clone(primaryKeyForeign) {
-		this.foreignKey = RufsSchema.getForeignKeyFromPrimaryKeyForeign(this, primaryKeyForeign, this.fieldName);
+		this.foreignKey = this.serverConnection.getForeignKey(this, this.fieldName, primaryKeyForeign);
 
 		if (this.isClonable == true) {
 			let count = 0;

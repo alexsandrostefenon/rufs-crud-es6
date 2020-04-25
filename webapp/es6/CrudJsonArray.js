@@ -5,7 +5,7 @@ import {CrudUiSkeleton} from "./CrudUiSkeleton.js";
 class CrudJsonArray extends CrudUiSkeleton {
 
 	constructor(parent, fields, fieldNameExternal, title, serverConnection, selectCallback) {
-		super(serverConnection, fieldNameExternal, fields, selectCallback);
+		super(serverConnection, fieldNameExternal, {"properties": fields}, selectCallback);
 		this.parent = parent;
 		this.fieldNameExternal = fieldNameExternal;
 		this.title = title;

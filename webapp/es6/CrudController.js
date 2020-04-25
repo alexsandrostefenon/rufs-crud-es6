@@ -78,7 +78,7 @@ class CrudController extends CrudCommom {
     get(primaryKey) {
     	return super.get(primaryKey).then(response => {
 			// monta a lista dos CrudItem
-    		const dependents = RufsSchema.getDependents(this.serverConnection.services, this.rufsService.name);
+    		const dependents = this.serverConnection.getDependents(this.rufsService.name);
 			for (let item of dependents) {
 				const rufsServiceOther = this.serverConnection.services[item.table];
 
@@ -86,7 +86,7 @@ class CrudController extends CrudCommom {
 					let field = rufsServiceOther.fields[item.field];
 
 					if (field != undefined) {
-						console.log(`[crudController.get] : checking CrudItem for ${item.field} to table ${item.table}`, this.rufsService.fields);
+//						console.log(`[crudController.get] : checking CrudItem for ${item.field} to table ${item.table}`, this.rufsService.fields);
 						if (field.title != undefined)
 							this.listItemCrud.push(new CrudItem(this.serverConnection, item.table, item.field, this.primaryKey));
 					} else {

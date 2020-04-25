@@ -86,8 +86,8 @@ class CrudUiSkeleton extends DataStoreItem {
 		}
 	}
 
-	constructor(serverConnection, name, fields, selectCallback) {
-		super(name, fields);
+	constructor(serverConnection, name, schema, selectCallback) {
+		super(name, schema);
 		this.serverConnection = serverConnection;
 		this.translation = serverConnection.translation;
 		this.formId = name + "Form";
@@ -99,7 +99,7 @@ class CrudUiSkeleton extends DataStoreItem {
 		// faz uma referencia local a field.filterResultsStr, para permitir opção filtrada, sem alterar a referencia global
 		for (let [fieldName, field] of Object.entries(this.fields)) {
 			if (field.foreignKeysImport != undefined) {
-				const rufsService = this.serverConnection.getForeignImportRufsService(field);
+				const rufsService = this.serverConnection.getForeignService(this, fieldName);
 
 				if (rufsService != undefined) {
 					let fieldFilter = Object.entries(field.filter);
@@ -196,7 +196,8 @@ class CrudUiSkeleton extends DataStoreItem {
 
 				if (field.foreignKeysImport != undefined) {
 					const foreignData = field.filterResults[pos];
-					newValue = foreignData[field.foreignKeysImport.field];
+					const foreignKey = this.serverConnection.getForeignKey(this, fieldName, foreignData);
+					newValue = foreignKey[fieldName];
 				} else if (field.options != undefined) {
 					newValue = field.filterResults[pos];
 				}

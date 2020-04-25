@@ -38,7 +38,7 @@ class RufsServiceController extends CrudController {
     	for (let service of this.rufsService.list) {
     		for (let [field, fieldObj] of Object.entries(service.fields)) {
     			if (fieldObj.primaryKey == true) {
-    				let value = {table: service.name, field};
+    				let value = [{table: service.name, field}];
     				this.rufsServicefields.foreignKeysImport.options.push(value);
     				this.rufsServicefields.foreignKeysImport.optionsLabels.push(JSON.stringify(value));
     			}
