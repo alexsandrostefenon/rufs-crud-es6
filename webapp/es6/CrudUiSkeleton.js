@@ -45,9 +45,9 @@ class CrudUiSkeleton extends DataStoreItem {
 				field.htmlType = "datetime-local";
 			}
 
-			if (field.options == undefined && field.optionsLabels == undefined && field.type == "string" && field.length == 1 && (field.default == "S" || field.default == "N")) {
-				field.filterResults = field.options = ["S", "N"];
-				field.filterResultsStr = field.optionsLabels = ["Sim", "Não"];
+			if (field.enum == undefined && field.enumLabels == undefined && field.type == "string" && field.length == 1 && (field.default == "S" || field.default == "N")) {
+				field.filterResults = field.enum = ["S", "N"];
+				field.filterResultsStr = field.enumLabels = ["Sim", "Não"];
 			}
 
 			if (field.htmlType == "number" || field.htmlType.includes("date") || field.htmlType.includes("time")) {
@@ -70,13 +70,13 @@ class CrudUiSkeleton extends DataStoreItem {
 				field.htmlTypeIsRangeable = false;
 			}
 
-			if (field.options != undefined) {
-				if (Array.isArray(field.options) == false) field.options = field.options.split(",");
+			if (field.enum != undefined) {
+				if (Array.isArray(field.enum) == false) field.enum = field.enum.split(",");
 				field.htmlTypeIsRangeable = false;
 			}
 
-			if (field.optionsLabels != undefined) {
-				if (Array.isArray(field.optionsLabels) == false) field.optionsLabels = field.optionsLabels.split(",");
+			if (field.enumLabels != undefined) {
+				if (Array.isArray(field.enumLabels) == false) field.enumLabels = field.enumLabels.split(",");
 				field.htmlTypeIsRangeable = false;
 			}
 			
@@ -125,13 +125,13 @@ class CrudUiSkeleton extends DataStoreItem {
 					field.filterResults = [];
 					field.filterResultsStr = [];
 				}
-			} else if (field.options != undefined) {
-				field.filterResults = field.options;
+			} else if (field.enum != undefined) {
+				field.filterResults = field.enum;
 				
-				if (field.optionsLabels != undefined) {
-					field.filterResultsStr = field.optionsLabels;
+				if (field.enumLabels != undefined) {
+					field.filterResultsStr = field.enumLabels;
 				} else {
-					field.filterResultsStr = field.options;
+					field.filterResultsStr = field.enum;
 				}
 			}
 			
@@ -198,7 +198,7 @@ class CrudUiSkeleton extends DataStoreItem {
 					const foreignData = field.filterResults[pos];
 					const foreignKey = this.serverConnection.getForeignKey(this, fieldName, foreignData);
 					newValue = foreignKey[fieldName];
-				} else if (field.options != undefined) {
+				} else if (field.enum != undefined) {
 					newValue = field.filterResults[pos];
 				}
 

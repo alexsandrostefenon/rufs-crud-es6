@@ -32,15 +32,15 @@ class RufsServiceController extends CrudController {
     			"readOnly":{"type": "b"},
     			};
 
-    	this.rufsServicefields.foreignKeysImport.options = [];
-    	this.rufsServicefields.foreignKeysImport.optionsLabels = [];
+    	this.rufsServicefields.foreignKeysImport.enum = [];
+    	this.rufsServicefields.foreignKeysImport.enumLabels = [];
     	
     	for (let service of this.rufsService.list) {
     		for (let [field, fieldObj] of Object.entries(service.fields)) {
     			if (fieldObj.primaryKey == true) {
     				let value = [{table: service.name, field}];
-    				this.rufsServicefields.foreignKeysImport.options.push(value);
-    				this.rufsServicefields.foreignKeysImport.optionsLabels.push(JSON.stringify(value));
+    				this.rufsServicefields.foreignKeysImport.enum.push(value);
+    				this.rufsServicefields.foreignKeysImport.enumLabels.push(JSON.stringify(value));
     			}
     		}
     	}

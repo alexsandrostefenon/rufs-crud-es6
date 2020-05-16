@@ -29,7 +29,7 @@ class UserController extends CrudController {
     	// Menu do usuário
 //    	$routeProvider.when("/app/:name/:action", {templateUrl: "/crud/templates/crud.html", controller: "CrudController", controllerAs: "vm"});
     	const fieldsMenu = {
-    			"menu":{"default":"action", "options":["action","help","configuration","report","form"]},
+    			"menu":{"default":"action", "enum":["action","help","configuration","report","form"]},
     			"label":{},
     			"path":{"default":"service/action?filter={}&aggregate={}"}
     			};

@@ -12,7 +12,7 @@ class CrudItemJson extends CrudUiSkeleton {
 		_fields._name.primaryKey = true;
 		
 		if (nameOptions != undefined) {
-			_fields._name.options = nameOptions;
+			_fields._name.enum = nameOptions;
 		}
 		
 		for (let fieldName in fields) _fields[fieldName] = fields[fieldName];
@@ -50,8 +50,8 @@ class CrudItemJson extends CrudUiSkeleton {
 
 	restrictNameOptions() {
 		if (this.nameOptions != undefined) {
-			this.fields._name.options = [];
-			for (let name of this.nameOptions) if (this.list.find(item => item._name == name) == undefined) this.fields._name.options.push(name);
+			this.fields._name.enum = [];
+			for (let name of this.nameOptions) if (this.list.find(item => item._name == name) == undefined) this.fields._name.enum.push(name);
 			this.buildFieldFilterResults();
 		}
 	}
@@ -105,7 +105,7 @@ class CrudItemJson extends CrudUiSkeleton {
 		var item = this.list[index];
 
 		if (this.nameOptions != undefined) {
-			this.fields._name.options.push(item._name);
+			this.fields._name.enum.push(item._name);
 			this.buildFieldFilterResults();
 		}
 
