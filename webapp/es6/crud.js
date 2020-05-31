@@ -1,4 +1,4 @@
-import {HttpRestRequest} from "/es6/ServerConnection.js";
+import {HttpRestRequest} from "./ServerConnection.js";
 import {ServerConnectionUI, CrudServiceUI} from "./ServerConnectionUI.js";
 import {CrudController} from "./CrudController.js";
 
@@ -77,23 +77,23 @@ class Crud {
     	});
 
     	$compileProvider.directive('crudTable', () => {
-    		return {restrict: 'E', scope: {vm: '=crud'}, templateUrl: '/crud/templates/crud-table.html'};
+    		return {restrict: 'E', scope: {vm: '=crud'}, templateUrl: './templates/crud-table.html'};
     	});
 
     	$compileProvider.directive('crudItem', () => {
-    		return {restrict: 'E', scope: {vm: '=', edit: '='}, templateUrl: '/crud/templates/crud-item.html'};
+    		return {restrict: 'E', scope: {vm: '=', edit: '='}, templateUrl: './templates/crud-item.html'};
     	});
 
     	$compileProvider.directive('crudItemJson', () => {
-    		return {restrict: 'E', scope: {vm: '=', edit: '='}, templateUrl: '/crud/templates/crud-item-json.html'};
+    		return {restrict: 'E', scope: {vm: '=', edit: '='}, templateUrl: './templates/crud-item-json.html'};
     	});
 
     	$compileProvider.directive('crudJsonArray', () => {
-    		return {restrict: 'E', scope: {vm: '=', edit: '='}, templateUrl: '/crud/templates/crud-json-array.html'};
+    		return {restrict: 'E', scope: {vm: '=', edit: '='}, templateUrl: './templates/crud-json-array.html'};
     	});
 
     	$compileProvider.directive('crudObjJson', () => {
-    		return {restrict: 'E', scope: {vm: '=', edit: '='}, templateUrl: '/crud/templates/crud-obj-json.html'};
+    		return {restrict: 'E', scope: {vm: '=', edit: '='}, templateUrl: './templates/crud-obj-json.html'};
     	});
     }
     

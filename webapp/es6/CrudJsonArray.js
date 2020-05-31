@@ -1,11 +1,11 @@
-import {Filter} from "/es6/DataStore.js";
-import {ServerConnection} from "/es6/ServerConnection.js";
+import {Filter} from "./DataStore.js";
+import {ServerConnection} from "./ServerConnection.js";
 import {CrudUiSkeleton} from "./CrudUiSkeleton.js";
 
 class CrudJsonArray extends CrudUiSkeleton {
 
-	constructor(parent, fields, fieldNameExternal, title, serverConnection, selectCallback) {
-		super(serverConnection, fieldNameExternal, {"properties": fields}, selectCallback);
+	constructor(parent, properties, fieldNameExternal, title, serverConnection, selectCallback) {
+		super(serverConnection, fieldNameExternal, {"properties": properties}, selectCallback);
 		this.parent = parent;
 		this.fieldNameExternal = fieldNameExternal;
 		this.title = title;
@@ -24,7 +24,7 @@ class CrudJsonArray extends CrudUiSkeleton {
 	}
 	// private, use in addItem, updateItem and removeItem
 	updateParent() {
-		if (this.parent.fields[this.fieldNameExternal].type == "string") {
+		if (this.parent.properties[this.fieldNameExternal].type == "string") {
 			this.parent.instance[this.fieldNameExternal] = JSON.stringify(this.list);
 		} else {
 			this.parent.instance[this.fieldNameExternal] = this.list;

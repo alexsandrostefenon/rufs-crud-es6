@@ -1,5 +1,5 @@
-import {Utils} from "/es6/Utils.js";
-import {DataStoreItem, Filter} from "/es6/DataStore.js";
+import {Utils} from "./Utils.js";
+import {DataStoreItem, Filter} from "./DataStore.js";
 // differ of DataStoreItem by UI features, serverConnection and field.foreignKeysImport dependencies
 class CrudUiSkeleton extends DataStoreItem {
 	
@@ -16,8 +16,8 @@ class CrudUiSkeleton extends DataStoreItem {
 
 	updateFields() {
 		// type: "i", service: "serviceName", default: null, hiden: false, required: false, flags: ["a", "b"], readOnly: false
-		for (let fieldName in this.fields) {
-			let field = this.fields[fieldName];
+		for (let fieldName in this.properties) {
+			let field = this.properties[fieldName];
 			field.filter = {};
 			field.htmlType = "text";
 			field.htmlStep = "any";
@@ -97,7 +97,7 @@ class CrudUiSkeleton extends DataStoreItem {
 
 	buildFieldFilterResults() {
 		// faz uma referencia local a field.filterResultsStr, para permitir opção filtrada, sem alterar a referencia global
-		for (let [fieldName, field] of Object.entries(this.fields)) {
+		for (let [fieldName, field] of Object.entries(this.properties)) {
 			if (field.foreignKeysImport != undefined) {
 				const rufsService = this.serverConnection.getForeignService(this, fieldName);
 
@@ -151,7 +151,7 @@ class CrudUiSkeleton extends DataStoreItem {
 	}
 
 	process(action, params) {
-		for (let [fieldName, field] of Object.entries(this.fields)) field.filter = {};
+		for (let [fieldName, field] of Object.entries(this.properties)) field.filter = {};
 		this.buildFieldFilterResults();
 		super.process(action, params);
 	}
@@ -160,7 +160,7 @@ class CrudUiSkeleton extends DataStoreItem {
 		super.setValues(obj);
 		// fieldFirst is used in form_body html template
 		this.fieldFirst = undefined;
-		const list = Object.entries(this.fields);
+		const list = Object.entries(this.properties);
 		let filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true && field.required == true && this.instance[fieldName] == undefined);
 		if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true && field.required == true);
 		if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true);
@@ -182,7 +182,7 @@ class CrudUiSkeleton extends DataStoreItem {
 
 	parseValue(fieldName, instance) {
 		if (instance == undefined) instance = this.instance;
-		const field = this.fields[fieldName];
+		const field = this.properties[fieldName];
 
 		if (field.flags != undefined && field.flags != null) {
 			// field.flags : String[], vm.instanceFlags[fieldName] : Boolean[]
@@ -201,6 +201,9 @@ class CrudUiSkeleton extends DataStoreItem {
 				} else if (field.enum != undefined) {
 					newValue = field.filterResults[pos];
 				}
+
+				if (typeof newValue == "string")
+					newValue = newValue.trimEnd();
 
 				if (this.validateFieldChange(fieldName, newValue, oldValue) == true) {
 					instance[fieldName] = newValue;

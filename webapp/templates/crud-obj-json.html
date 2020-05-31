@@ -6,7 +6,7 @@
         <strong>Error!</strong> Something broke. Retry, or cancel and start afresh.
     </div>
 
-	<div ng-repeat="(fieldName,field) in vm.fields" class="form-group" ng-class="{'has-error': {{vm.formId}}.{{fieldName}}.$invalid}">
+	<div ng-repeat="(fieldName,field) in vm.properties" class="form-group" ng-class="{'has-error': {{vm.formId}}.{{fieldName}}.$invalid}">
 	    <label for="{{fieldName}}" class="col-sm-2 control-label">{{field._label}}</label>
 
 	    <div id="{{vm.formId}}-{{fieldName}}_controls" class="col-sm-10">

@@ -1,5 +1,5 @@
-import {RufsService, ServerConnection} from "/es6/ServerConnection.js";
-import {RufsSchema} from "/es6/DataStore.js";
+import {RufsService, ServerConnection, HttpRestRequest} from "./ServerConnection.js";
+import {RufsSchema} from "./DataStore.js";
 import {CrudController} from "./CrudController.js";
 
 class CrudServiceUI extends RufsService {
@@ -112,32 +112,11 @@ class CrudServiceUI extends RufsService {
 
 class ServerConnectionUI extends ServerConnection {
 
-	static buildLocationHash(hashPath, primaryKey) {
-//		TODO
-		function objectToParams(object) {
-			let isJsObject = p => typeof(p) == "object";
-
-			function subObjectToParams(key, object) {
-				if (object == undefined) return "";
-				return Object.keys(object).map((childKey) => isJsObject(object[childKey]) ?
-						subObjectToParams(`${key}.${encodeURIComponent(childKey)}`, object[childKey]) :
-						`${key}.${encodeURIComponent(childKey)}=${encodeURIComponent(object[childKey])}`
-				).join('&');
-			}
-
-			return Object.keys(object).map((key) => isJsObject(object[key]) ?
-				subObjectToParams(encodeURIComponent(key), object[key]) :
-				`${encodeURIComponent(key)}=${encodeURIComponent(object[key])}`
-			).join('&');
-		}
-
+	static buildLocationHash(hashPath, hashSearchObj) {
 		let hash = "#!/app/" + hashPath;
 
-		if (primaryKey != undefined) {
-//			let hashSearchObj = {primaryKey:JSON.stringify(primaryKey)};
-			let hashSearchObj = objectToParams({primaryKey:primaryKey});
-			let searchParams = new URLSearchParams(hashSearchObj);
-			hash = hash + "?" + searchParams.toString();
+		if (hashSearchObj != undefined) {
+			hash = hash + "?" + HttpRestRequest.jsonToURLSearchParams(hashSearchObj).toString();
 		}
 		
 		return hash;
@@ -176,14 +155,15 @@ class ServerConnectionUI extends ServerConnection {
 		this.translation.cancel = "Cancel";
 		this.translation.save = "Save";
 		this.translation.filter = "Filter";
+        this.menu = undefined;
 	}
     // private <- login
 	loginDone() {
         this.menu = {user:[{path:"login", label:"Exit"}]};
         // user menu
-		if (this.user.menu != undefined && this.user.menu.length > 0) {
-			console.log("user.menu :", this.user.menu);
-			const menus = JSON.parse(this.user.menu);
+		if (this.userMenu != undefined && this.userMenu.length > 0) {
+			console.log("menu :", this.userMenu);
+			const menus = JSON.parse(this.userMenu);
 
 			for (var menuId in menus) {
 				let menuItem = menus[menuId];
@@ -208,20 +188,20 @@ class ServerConnectionUI extends ServerConnection {
 	    	}
 		}
         // routes and modules
-//		var config = JSON.parse(this.user.config);
+//		var config = JSON.parse(this.config);
 		const promises = [];
-		this.$routeProvider.when('/app/login',{templateUrl:"/crud/templates/login.html", controller:'LoginController', controllerAs: "vm"});
+		this.$routeProvider.when('/app/login',{templateUrl:"./templates/login.html", controller:'LoginController', controllerAs: "vm"});
 
-		if (this.user.routes != undefined && this.user.routes != null) {
+		if (this.routes != undefined && this.routes != null) {
 			let routes = [];
 
-			if (Array.isArray(this.user.routes) == true) {
-				routes = this.user.routes;
-			} else if (typeof this.user.routes === 'string' || this.user.routes instanceof String) {
+			if (Array.isArray(this.routes) == true) {
+				routes = this.routes;
+			} else if (typeof this.routes === 'string' || this.routes instanceof String) {
 				try {
-					routes = JSON.parse(this.user.routes);
+					routes = JSON.parse(this.routes);
 				} catch (e) {
-					console.error("fail to parse json from string this.user.routes : ", this.user.routes, "err : ", e);
+					console.error("fail to parse json from string this.routes : ", this.routes, "err : ", e);
 				}
 			} else {
 				console.err("invalid routes");
@@ -229,14 +209,17 @@ class ServerConnectionUI extends ServerConnection {
 
 			for (let route of routes) {
 				if (route.templateUrl == undefined || route.templateUrl.length == 0) {
-					route.templateUrl = "/crud/templates/crud.html";
+					route.templateUrl = "./templates/crud.html";
 				}
-				
-				let path = route.controller.startsWith("/") ? "" : "./";
 
-				let promise = import(path + route.controller + ".js").then(module => {
-					const controllerName = route.controller.substring(route.controller.lastIndexOf("/")+1);
-					console.log("loaded:", controllerName, "route:", route);
+				let path = route.controller;
+				if (path.startsWith("/") == false && path.startsWith(".") == false) path = "./" + path;
+				if (path.endsWith(".js") == false) path = path + ".js";
+				console.log("loading...", path);
+
+				let promise = import(path).then(module => {
+					const controllerName = route.controller;
+					console.log("...loaded:", controllerName, "route:", route);
 
 					this.$controllerProvider.register(controllerName, function(ServerConnectionService, $scope) {
 						const _class = module[controllerName];
@@ -252,12 +235,12 @@ class ServerConnectionUI extends ServerConnection {
 
 		return Promise.all(promises).then(() => {
 			console.log("Promise.all:", promises);
-			this.$routeProvider.when("/app/:name/:action", {templateUrl: "/crud/templates/crud.html", controller: "CrudController", controllerAs: "vm"});
+			this.$routeProvider.when("/app/:name/:action", {templateUrl: "./templates/crud.html", controller: "CrudController", controllerAs: "vm"});
 			this.$routeProvider.otherwise({redirectTo: '/app/login'});
 
-	        if (this.user.path != undefined && this.user.path != null && this.user.path.length > 0) {
+	        if (this.path != undefined && this.path != null && this.path.length > 0) {
 	        	this.$route.reload();
-	        	ServerConnectionUI.changeLocationHash(this.user.path);
+	        	ServerConnectionUI.changeLocationHash(this.path);
 	        }
 		});
     }
@@ -276,7 +259,7 @@ class ServerConnectionUI extends ServerConnection {
 
     logout() {
     	super.logout();
-        this.menu = {};
+        this.menu = undefined;
 		ServerConnectionUI.changeLocationHash("login", {"server":this.url});
     }
 

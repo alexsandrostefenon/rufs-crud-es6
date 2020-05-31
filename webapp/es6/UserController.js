@@ -2,12 +2,13 @@ import {CrudController} from "./CrudController.js";
 import {CrudItemJson} from "./CrudItemJson.js";
 import {CrudObjJson} from "./CrudObjJson.js";
 import {CrudJsonArray} from "./CrudJsonArray.js";
+import {CaseConvert} from "./CaseConvert.js";
 
 class UserController extends CrudController {
 
     constructor(serverConnection, $scope) {
     	super(serverConnection, $scope);
-        this.fields["password"].htmlType = "password";
+        this.properties["password"].htmlType = "password";
 //      debugger;
     	// Regras de acesso aos serviços
 		const fieldsRoles = {
@@ -45,7 +46,7 @@ class UserController extends CrudController {
 */
     	const fieldsRoute = {
     			"path":{"primaryKey":true, "default":"/app/xxx/:action"},
-    			"templateUrl":{"default":"/crud/templates/crud.html"},
+    			"templateUrl":{"default":"./templates/crud.html"},
     			"controller":{"default":"CrudController"},
     			};
     	// fields, instanceExternal, fieldNameExternal, title, serverConnection, selectCallback
@@ -58,10 +59,10 @@ class UserController extends CrudController {
             /*
 path: 'request/search',
 menu: '{"import":{"menu":"actions","label":"Importar","path":"request/import?overwrite.type=1&overwrite.state=10"},"buy":{"menu":"actions","label":"Compra","path":"request/new?overwrite={\"type\":1,\"state\":10}"},"sale":{"menu":"actions","label":"Venda","path":"request/new?overwrite={\"type\":2,\"state\":10}"},"requestPayment":{"menu":"form","label":"Financeiro","path":"request_payment/search"},"stock":{"menu":"form","label":"Estoque","path":"stock/search"},"product":{"menu":"form","label":"Produtos","path":"product/search"},"person":{"menu":"form","label":"Clientes e Fornecedores","path":"person/search"},"requests":{"menu":"form","label":"Requisições","path":"request/search"},"account":{"menu":"form","label":"Contas","path":"account/search"}}',
-routes : '[{"path":"/app/request/:action","controller":"/nfe/es6/RequestController"}]'
+routes : '[{"path":"/app/request/:action","controller":"RequestController"}]'
             */
             if (menu[serviceName] == undefined) {
-                menu[serviceName] = {"menu": "services", "label": serviceName, "path": `${serviceName}/search`};
+                menu[serviceName] = {"menu": "services", "label": serviceName, "path": `${CaseConvert.camelToUnderscore(serviceName)}/search`};
             }
         }
 
@@ -72,7 +73,7 @@ routes : '[{"path":"/app/request/:action","controller":"/nfe/es6/RequestControll
         for (let serviceName in newRoles) {
             if (oldRoles[serviceName] == undefined) {
                 if (this.instance.path == undefined) {
-                    this.instance.path = `${serviceName}/search`;
+                    this.instance.path = `${CaseConvert.camelToUnderscore(serviceName)}/search`;
                 }
 
                 const listDependencies = this.serverConnection.getDependencies(serviceName);

@@ -1,7 +1,7 @@
 <h4>{{vm.translation.view}}</h4>
 
 <form id="{{vm.formId}}" name="{{vm.formId}}" class="form-horizontal" role="form">
-	<div ng-include="'/crud/templates/crud-model_form_body_view.html'"></div>
+	<div ng-include="'./templates/crud-model_form_body_view.html'"></div>
 <!--
 	<div ng-if="vm.rufsService.params.access.create == true" ng-include="'/crud/templates/crud-model_form_body.html'"></div>
 	<div ng-if="vm.rufsService.params.access.create == false" ng-include="'/crud/templates/crud-model_form_body_view.html'"></div>
@@ -9,7 +9,7 @@
     <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
 		<button id="{{vm.formId}}-exit" name="exit" class="btn btn-default" ng-click="vm.goToSearch()"><span class="glyphicon glyphicon-remove"></span> {{vm.translation.exit}}</button>
-		<a      ng-if="vm.rufsService.params.access.update == true" id="{{vm.formId}}-update" name="update" class="btn btn-primary" href="{{vm.buildLocationHash('edit', vm.primaryKey)}}"><span class="glyphicon glyphicon-edit"></span> {{vm.translation.edit}}</a>
+		<a      ng-if="vm.rufsService.params.access.update == true" id="{{vm.formId}}-update" name="update" class="btn btn-primary" href="{{vm.buildLocationHash('edit', {primaryKey: vm.primaryKey})}}"><span class="glyphicon glyphicon-edit"></span> {{vm.translation.edit}}</a>
 <!--
 		<button ng-if="vm.rufsService.params.access.update == true" id="{{vm.formId}}-update" name="update" class="btn btn-primary" ng-click="vm.update()"><span class="glyphicon glyphicon-save"></span> {{vm.translation.save}}</button>
 		<button ng-if="vm.rufsService.params.access.create == true" id="{{vm.formId}}-save" name="save" class="btn btn-primary" ng-disabled="vm.isClean() || {{vm.formId}}.$invalid" ng-click="vm.saveAsNew()"><span class="glyphicon glyphicon-import"></span> {{vm.translation.saveAsNew}}</button>

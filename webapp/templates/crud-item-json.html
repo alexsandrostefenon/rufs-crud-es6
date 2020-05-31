@@ -4,7 +4,7 @@
 </div>
 
 <form id="{{vm.formId}}" name="{{vm.formId}}" class="form-horizontal" role="form" ng-if="edit == true">
-	<div ng-include="'/crud/templates/crud-model_form_body.html'"></div>
+	<div ng-include="'./templates/crud-model_form_body.html'"></div>
 
     <div ng-if="vm.instance[vm.fieldFirst].length > 0" class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
@@ -20,7 +20,7 @@
 	            <th></th>
            		<th ng-repeat="fieldName in vm.fieldsTable">
 					<a href ng-click="vm.sortLeft(fieldName)"><span class="glyphicon glyphicon-arrow-left"></span> </a>
-					<a href ng-click="vm.sortToggle(fieldName)"> {{vm.serverConnection.convertCaseAnyToLabel(vm.fields[fieldName].label)}}</a>
+					<a href ng-click="vm.sortToggle(fieldName)"> {{vm.serverConnection.convertCaseAnyToLabel(vm.properties[fieldName].label)}}</a>
 					<a href ng-click="vm.sortRigth(fieldName)"><span class="glyphicon glyphicon-arrow-right"></span> </a>
            		</th>
 	        </tr>

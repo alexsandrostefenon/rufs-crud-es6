@@ -1,4 +1,4 @@
-<div ng-repeat="(fieldName,field) in vm.fields" ng-if="field.hiden != true">
+<div ng-repeat="(fieldName,field) in vm.properties" ng-if="field.hiden != true">
 	<div class="form-group">
 		<div ng-if="field.htmlType.includes('date')" class="col-xs-offset-3 col-xs-9">
 			<select                                             class="form-control" id="{{vm.formId}}-{{fieldName}}-range" name="{{fieldName}}-range" ng-model="vm.instanceFilterRange[fieldName]"      ng-change="vm.setFilterRange(fieldName, vm.instanceFilterRange[fieldName])" ng-options="o for o in field.filterRangeOptions"></select>

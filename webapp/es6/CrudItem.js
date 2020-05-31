@@ -1,5 +1,5 @@
 import {CrudCommom} from "./CrudCommom.js";
-import {RufsSchema} from "/es6/DataStore.js";
+import {RufsSchema} from "./DataStore.js";
 
 class CrudItem extends CrudCommom {
 
@@ -7,7 +7,7 @@ class CrudItem extends CrudCommom {
 		console.log(`[CrudItem.constructor] : ${serviceName}, ${fieldName}, ${title}`, primaryKeyForeign);
     	super(serverConnection, serverConnection.services[serviceName], {}, 1);
 		this.fieldName = fieldName;
-		const field = this.fields[fieldName];
+		const field = this.properties[fieldName];
 		this.title = (title != undefined && title != null) ? title : field.title;
 		this.isClonable = field.isClonable == undefined ? false : field.isClonable;
 		this.numMaxItems = (numMaxItems != undefined && numMaxItems != null) ? numMaxItems : 999;
@@ -16,9 +16,9 @@ class CrudItem extends CrudCommom {
 		this.foreignKey = this.serverConnection.getForeignKey(this, this.fieldName, primaryKeyForeign);
 		
 		for (let [_fieldName, value] of Object.entries(this.foreignKey)) {
-			this.fields[_fieldName].hiden = true;
-			this.fields[_fieldName].tableVisible = false;
-			this.fields[_fieldName].default = value;
+			this.properties[_fieldName].hiden = true;
+			this.properties[_fieldName].tableVisible = false;
+			this.properties[_fieldName].default = value;
 		}
 
 		this.query();
@@ -82,8 +82,8 @@ class CrudItem extends CrudCommom {
 
 	save() {
 		return super.save().then(response => this.query()).then(() => {
-			for (let fieldName in this.fields) {
-				let field = this.fields[fieldName];
+			for (let fieldName in this.properties) {
+				let field = this.properties[fieldName];
 				
 				if (field.hiden != true) {
 					document.getElementById(this.formId + "-" + fieldName).focus();

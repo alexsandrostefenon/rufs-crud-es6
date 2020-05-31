@@ -2,14 +2,14 @@ import {CrudUiSkeleton} from "./CrudUiSkeleton.js";
 
 class CrudObjJson extends CrudUiSkeleton {
 
-	constructor(parent, fields, fieldNameExternal, title, serverConnection) {
-		super(serverConnection, fieldNameExternal, {"properties": fields}, selectCallback);
+	constructor(parent, properties, fieldNameExternal, title, serverConnection) {
+		super(serverConnection, fieldNameExternal, {"properties": properties}, selectCallback);
 		this.parent = parent;
 		this.fieldNameExternal = fieldNameExternal;
 		this.title = title;
 
-		for (var fieldName in this.fields) {
-			var field = this.fields[fieldName];
+		for (var fieldName in this.properties) {
+			var field = this.properties[fieldName];
 			field._label = serverConnection.convertCaseAnyToLabel(fieldName);
 		}
 

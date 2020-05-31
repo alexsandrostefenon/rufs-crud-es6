@@ -7,7 +7,7 @@
                     <th></th>
                		<th ng-repeat="fieldName in vm.fieldsTable">
 						<a href ng-click="vm.sortLeft(fieldName)"><span class="glyphicon glyphicon-arrow-left"></span> </a>
-						<a href ng-click="vm.sortToggle(fieldName)"> {{vm.serverConnection.convertCaseAnyToLabel(vm.fields[fieldName].label)}}</a>
+						<a href ng-click="vm.sortToggle(fieldName)"> {{vm.serverConnection.convertCaseAnyToLabel(vm.properties[fieldName].label)}}</a>
 						<a href ng-click="vm.sortRigth(fieldName)"><span class="glyphicon glyphicon-arrow-right"></span> </a>
                		</th>
                 </tr>
@@ -15,7 +15,7 @@
             <tbody id="{{vm.formId}}-crud-table-body">
                 <tr ng-repeat="item in vm.pagination.listPage">
 					<td>
-						<a href="{{vm.buildLocationHash('view', vm.rufsService.getPrimaryKey(item))}}"><span class="glyphicon glyphicon-eye-open"></span> {{vm.translation.view}}</a>
+						<a href="{{vm.buildLocationHash('view', {primaryKey: vm.rufsService.getPrimaryKey(item)})}}"><span class="glyphicon glyphicon-eye-open"></span> {{vm.translation.view}}</a>
 <!--
 						<a href="{{vm.buildLocationHash('view', vm.rufsService.getPrimaryKey(item))}}" ng-if="vm.rufsService.params.access.update == false"><span class="glyphicon glyphicon-eye-open"></span> {{vm.translation.view}}</a>
 						<a href="{{vm.buildLocationHash('edit', vm.rufsService.getPrimaryKey(item))}}" ng-if="vm.rufsService.params.access.update == true"><span class="glyphicon glyphicon-edit"></span> {{vm.translation.edit}}</a>

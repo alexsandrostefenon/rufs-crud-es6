@@ -1,4 +1,4 @@
-import {CaseConvert} from "/es6/CaseConvert.js";
+import {CaseConvert} from "./CaseConvert.js";
 import {CrudController} from "./CrudController.js";
 import {CrudItemJson} from "./CrudItemJson.js";
 
@@ -7,7 +7,7 @@ class RufsServiceController extends CrudController {
     constructor(serverConnection, $scope) {
     	super(serverConnection, $scope);
 //		const defaultValues = {type: "s", updatable: true, length: 255, precision: 9, scale: 3, hiden: false, primaryKey: false, required: false};
-    	this.rufsServicefields = {
+    	this.rufsService.properties = {
     			"type":{"options": ["s", "i", "b", "n", "datetime-local", "date", "time"]},
     			"default":{},
     			"options": {},
@@ -19,7 +19,6 @@ class RufsServiceController extends CrudController {
     			"length":{"type": "i"},
     			"precision":{"type": "i"},
     			"scale":{"type": "i"},
-    			"primaryKey":{"type": "b"},
     			"identityGeneration":{"options": ["ALWAYS", "BY DEFAULT"]},
     			"foreignKeysImport":{}, // [table, field]
     			"shortDescription":{"type": "b"},
@@ -32,20 +31,18 @@ class RufsServiceController extends CrudController {
     			"readOnly":{"type": "b"},
     			};
 
-    	this.rufsServicefields.foreignKeysImport.enum = [];
-    	this.rufsServicefields.foreignKeysImport.enumLabels = [];
+    	this.rufsService.properties.foreignKeysImport.enum = [];
+    	this.rufsService.properties.foreignKeysImport.enumLabels = [];
     	
     	for (let service of this.rufsService.list) {
-    		for (let [field, fieldObj] of Object.entries(service.fields)) {
-    			if (fieldObj.primaryKey == true) {
-    				let value = [{table: service.name, field}];
-    				this.rufsServicefields.foreignKeysImport.enum.push(value);
-    				this.rufsServicefields.foreignKeysImport.enumLabels.push(JSON.stringify(value));
-    			}
+    		for (let fieldName of service.primaryKeys) {
+				let value = [{table: service.name, field: service.properties[fieldName]}];
+				this.rufsService.properties.foreignKeysImport.enum.push(value);
+				this.rufsService.properties.foreignKeysImport.enumLabels.push(JSON.stringify(value));
     		}
     	}
     	
-       	this.listItemCrudJson.push(new CrudItemJson(this, this.rufsServicefields, "fields", "Campos dos formulários", this.serverConnection));
+       	this.listItemCrudJson.push(new CrudItemJson(this, this.rufsService.properties, "properties", "Campos dos formulários", this.serverConnection));
     }
 
     save() {

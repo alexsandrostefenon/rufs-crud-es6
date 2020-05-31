@@ -4,7 +4,7 @@
 </div>
       
 <form id="{{vm.formId}}" name="{{vm.formId}}" class="form-horizontal" role="form" ng-if="edit == true && vm.filterResults.length < vm.numMaxItems">
-	<div ng-include="'/crud/templates/crud-model_form_body.html'"></div>
+	<div ng-include="'./templates/crud-model_form_body.html'"></div>
 
     <div ng-if="vm.instance[vm.fieldFirst] != undefined" class="form-group">
         <div class="col-sm-offset-2 col-sm-10">

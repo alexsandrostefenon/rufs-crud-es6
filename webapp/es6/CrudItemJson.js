@@ -1,22 +1,22 @@
-import {Filter} from "/es6/DataStore.js";
-import {Utils} from "/es6/Utils.js";
-import {CaseConvert} from "/es6/CaseConvert.js";
+import {Filter} from "./DataStore.js";
+import {Utils} from "./Utils.js";
+import {CaseConvert} from "./CaseConvert.js";
 import {CrudUiSkeleton} from "./CrudUiSkeleton.js";
 
 class CrudItemJson extends CrudUiSkeleton {
 
-	constructor(parent, fields, fieldNameExternal, title, serverConnection, nameOptions) {
+	constructor(parent, properties, fieldNameExternal, title, serverConnection, nameOptions) {
 		let _fields = {};
 		_fields._name = {};
-		_fields._name.type = "s";
-		_fields._name.primaryKey = true;
+		_fields._name.type = "string";
 		
 		if (nameOptions != undefined) {
 			_fields._name.enum = nameOptions;
 		}
 		
-		for (let fieldName in fields) _fields[fieldName] = fields[fieldName];
+		for (let fieldName in properties) _fields[fieldName] = properties[fieldName];
 		super(serverConnection, fieldNameExternal, {"properties": _fields});
+		this.primaryKeys = ["_name"];
 		this.parent = parent;
 		this.fieldNameExternal = fieldNameExternal;
 		this.title = title;
@@ -34,8 +34,8 @@ class CrudItemJson extends CrudUiSkeleton {
 				var objItem = objItems[itemName];
 				var item = {};
 
-				for (var fieldName in this.fields) {
-					var field = this.fields[fieldName];
+				for (var fieldName in this.properties) {
+					var field = this.properties[fieldName];
 					item[fieldName] = objItem[fieldName];
 				}
 
@@ -50,8 +50,8 @@ class CrudItemJson extends CrudUiSkeleton {
 
 	restrictNameOptions() {
 		if (this.nameOptions != undefined) {
-			this.fields._name.enum = [];
-			for (let name of this.nameOptions) if (this.list.find(item => item._name == name) == undefined) this.fields._name.enum.push(name);
+			this.properties._name.enum = [];
+			for (let name of this.nameOptions) if (this.list.find(item => item._name == name) == undefined) this.properties._name.enum.push(name);
 			this.buildFieldFilterResults();
 		}
 	}
@@ -60,7 +60,7 @@ class CrudItemJson extends CrudUiSkeleton {
 		var objItems = {};
 
 		for (let item of this.list) {
-			let obj = Utils.clone(item, Object.keys(this.fields));
+			let obj = Utils.clone(item, Object.keys(this.properties));
 			delete obj._name;
 			objItems[item._name] = obj;
 		}
@@ -105,7 +105,7 @@ class CrudItemJson extends CrudUiSkeleton {
 		var item = this.list[index];
 
 		if (this.nameOptions != undefined) {
-			this.fields._name.enum.push(item._name);
+			this.properties._name.enum.push(item._name);
 			this.buildFieldFilterResults();
 		}
 

@@ -15,7 +15,7 @@ class CrudCommom extends CrudUiSkeleton {
 		super.process(action, params);
 
 		if (action == "search") {
-			this.templateModel = "/crud/templates/crud-model_search.html";
+			this.templateModel = "./templates/crud-model_search.html";
 			
 			if (params.filter != undefined || params.filterRange != undefined || params.filterRangeMin != undefined || params.filterRangeMax != undefined) {
 				if (params.filterRange != undefined) {
@@ -37,14 +37,14 @@ class CrudCommom extends CrudUiSkeleton {
 				this.paginate(params.pagination);
 			}
 		} else if (action == "new") {
-			this.templateModel = "/crud/templates/crud-model_new.html";
+			this.templateModel = "./templates/crud-model_new.html";
 			this.setValues(params.overwrite);
 		} else if (action == "view") {
-			this.templateModel = "/crud/templates/crud-model_view.html";
+			this.templateModel = "./templates/crud-model_view.html";
 			this.primaryKey = this.rufsService.getPrimaryKey(params.primaryKey);
 			this.get(this.primaryKey);
 		} else if (action == "edit") {
-			this.templateModel = "/crud/templates/crud-model_edit.html";
+			this.templateModel = "./templates/crud-model_edit.html";
 			this.primaryKey = this.rufsService.getPrimaryKey(params.primaryKey);
 			this.get(this.primaryKey);
 		}
@@ -68,7 +68,7 @@ class CrudCommom extends CrudUiSkeleton {
 	}
 	// fieldName, 'view', item, false
     goToField(fieldName, action, obj, isGoNow) {
-    	const field = this.fields[fieldName];
+    	const field = this.properties[fieldName];
     	let service;
     	let primaryKey = {};
 
@@ -81,10 +81,10 @@ class CrudCommom extends CrudUiSkeleton {
 			primaryKey = this.rufsService.getPrimaryKey(obj);
 		}
 
-		const url = ServerConnectionUI.buildLocationHash(service.path + "/" + action, primaryKey);
+		const url = ServerConnectionUI.buildLocationHash(service.path + "/" + action, {primaryKey});
 
     	if (isGoNow == true) {
-    		ServerConnectionUI.changeLocationHash(service.path + "/" + action, primaryKey);
+    		ServerConnectionUI.changeLocationHash(service.path + "/" + action, {primaryKey});
     	}
 
     	return url;
