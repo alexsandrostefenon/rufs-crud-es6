@@ -25,11 +25,13 @@ class CrudItem extends CrudCommom {
 	}
 
 	query() {
-		this.process("search", {filter: this.foreignKey});
+		return this.process("search", {filter: this.foreignKey}).then(() => {
+			if (this.queryCallback != undefined && this.queryCallback != null) {
+				this.queryCallback(this.filterResults);
+			}
 
-		if (this.queryCallback != undefined && this.queryCallback != null) {
-			this.queryCallback(this.filterResults);
-		}
+			this.serverConnection.$scope.$apply();
+		});
 	}
 
 	clone(primaryKeyForeign) {
@@ -90,6 +92,8 @@ class CrudItem extends CrudCommom {
 					break;
 				}
 			}
+
+			this.serverConnection.$scope.$apply();
 		});
 	}
 

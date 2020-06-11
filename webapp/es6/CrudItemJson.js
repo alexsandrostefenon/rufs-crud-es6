@@ -45,7 +45,7 @@ class CrudItemJson extends CrudUiSkeleton {
 		}
 		
 		this.restrictNameOptions();
-		this.process();
+		return this.process();
 	}
 
 	restrictNameOptions() {
@@ -100,16 +100,17 @@ class CrudItemJson extends CrudUiSkeleton {
 	}
 
 	edit(name) {
-		this.clear();
-		const index = Filter.findPos(this.list, {"_name": name});
-		var item = this.list[index];
+		return this.clear().then(() => {
+			const index = Filter.findPos(this.list, {"_name": name});
+			var item = this.list[index];
 
-		if (this.nameOptions != undefined) {
-			this.properties._name.enum.push(item._name);
-			this.buildFieldFilterResults();
-		}
+			if (this.nameOptions != undefined) {
+				this.properties._name.enum.push(item._name);
+				this.buildFieldFilterResults();
+			}
 
-		this.setValues(item);
+			return this.setValues(item);
+		});
 	}
 
 	moveUp(name) {

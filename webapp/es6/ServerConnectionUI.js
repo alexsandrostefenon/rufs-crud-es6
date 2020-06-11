@@ -4,8 +4,8 @@ import {CrudController} from "./CrudController.js";
 
 class CrudServiceUI extends RufsService {
 
-	constructor(serverConnection, params, httpRest) {
-		super(serverConnection, params, httpRest);
+	constructor(name, params, serverConnection, httpRest) {
+		super(name, params, serverConnection, httpRest);
 		this.label = (params.title == undefined || params.title == null) ? serverConnection.convertCaseAnyToLabel(this.path) : params.title;
 		this.listStr = [];
 	}
@@ -43,37 +43,27 @@ class CrudServiceUI extends RufsService {
         if (params.oldPos == undefined && params.newPos == undefined) {
         	// add
         	this.listStr.push(str);
+			console.log(`[${this.constructor.name}.updateListStr(${this.name}, ${params.oldPos}, ${params.newPos})] add :`, str);
         } else if (params.oldPos != undefined && params.newPos == undefined) {
         	// remove
         	this.listStr.splice(params.oldPos, 1);
+			console.log(`[${this.constructor.name}.updateListStr(${this.name}, ${params.oldPos}, ${params.newPos})] remove :`, str);
         } else if (params.newPos == params.oldPos) {
         	// replace
         	this.listStr[params.newPos] = str;
+			console.log(`[${this.constructor.name}.updateListStr(${this.name}, ${params.oldPos}, ${params.newPos})] replace :`, str);
         } else if (params.oldPos != undefined && params.newPos != undefined) {
         	// remove and add
         	this.listStr.splice(params.oldPos, 1);
         	this.listStr.splice(params.newPos, 0, str);
+			console.log(`[${this.constructor.name}.updateListStr(${this.name}, ${params.oldPos}, ${params.newPos})] remove and add :`, str);
         }
         
         return params;
 	}
-	// used by websocket
-	removeInternal(primaryKey) {
-		console.log("CrudServiceUI.removeInternal : calling super...");
-		let response = super.removeInternal(primaryKey);
-		console.log("CrudServiceUI.removeInternal : ...super response = ", response);
 
-		if (response != null) {
-			console.log("CrudServiceUI.removeInternal : doing updateListStr :", this.listStr[response.oldPos]);
-	        return this.updateListStr(response);
-		} else {
-			console.log("CrudServiceUI.removeInternal : alread removed, primaryKey = ", primaryKey);
-			return null;
-		}
-	}
-	// used by websocket
-	getRemote(primaryKey) {
-    	return super.getRemote(primaryKey).then(response => this.updateListStr(response));
+	get(primaryKey) {
+    	return super.get(primaryKey);
 	}
 
 	save(itemSend) {
@@ -156,6 +146,28 @@ class ServerConnectionUI extends ServerConnection {
 		this.translation.save = "Save";
 		this.translation.filter = "Filter";
         this.menu = undefined;
+	}
+	// used by websocket
+	removeInternal(schemaName, primaryKey) {
+		const schema = this.getService(schemaName);
+		if (schema == undefined) return undefined;
+		let response = super.removeInternal(schemaName, primaryKey);
+
+		if (response != null && response != undefined) {
+			console.log("CrudServiceUI.removeInternal : doing updateListStr :", schema.listStr[response.oldPos]);
+	        return schema.updateListStr(response);
+		} else {
+			console.log("CrudServiceUI.removeInternal : alread removed, primaryKey = ", primaryKey);
+			return null;
+		}
+	}
+
+	get(schemaName, primaryKey, ignoreCache) {
+		return super.get(schemaName, primaryKey, ignoreCache).
+		then(response => {
+			const service = this.getService(schemaName);
+			return service.updateListStr(response);
+		});
 	}
     // private <- login
 	loginDone() {

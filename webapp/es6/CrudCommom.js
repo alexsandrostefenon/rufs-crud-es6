@@ -4,54 +4,63 @@ import {ServerConnectionUI} from "./ServerConnectionUI.js";
 class CrudCommom extends CrudUiSkeleton {
 
 	constructor(serverConnection, rufsService) {
-		super(serverConnection, rufsService.name, rufsService.schema);
+		super(serverConnection, rufsService.name, rufsService);
 		this.rufsService = rufsService;
 		this.list = this.rufsService.list;
-		this.rufsService.addRemoteListener(this);
+		this.serverConnection.addRemoteListener(this);
 		this.activeTab = 0;
 	}
 	
 	process(action, params) {
-		super.process(action, params);
+		return super.process(action, params).then(() => {
+			let promise;
 
-		if (action == "search") {
-			this.templateModel = "./templates/crud-model_search.html";
-			
-			if (params.filter != undefined || params.filterRange != undefined || params.filterRangeMin != undefined || params.filterRangeMax != undefined) {
-				if (params.filterRange != undefined) {
-					for (let [fieldName, value] of Object.entries(params.filterRange)) this.setFilterRange(fieldName, value);
+			if (action == "search") {
+				this.templateModel = "./templates/crud-model_search.html";
+
+				if (params.filter != undefined || params.filterRange != undefined || params.filterRangeMin != undefined || params.filterRangeMax != undefined) {
+					if (params.filterRange != undefined) {
+						for (let [fieldName, value] of Object.entries(params.filterRange)) this.setFilterRange(fieldName, value);
+					}
+
+					this.applyFilter(params.filter, params.filterRangeMin, params.filterRangeMax);
 				}
-			
-				this.applyFilter(params.filter, params.filterRangeMin, params.filterRangeMax);
+
+				if (params.aggregate != undefined) {
+					Promise.resolve().then(() => this.applyAggregate(params.aggregate));
+				}
+
+				if (params.sort != undefined) {
+					this.applySort(params.sort);
+				}
+
+				if (params.pagination != undefined) {
+					this.paginate(params.pagination);
+				}
+
+				promise = Promise.resolve();
+			} else if (action == "new") {
+				this.templateModel = "./templates/crud-model_new.html";
+				promise = this.setValues(params.overwrite);
+			} else if (action == "view") {
+				this.templateModel = "./templates/crud-model_view.html";
+				this.primaryKey = this.rufsService.getPrimaryKey(params.primaryKey);
+				promise = this.get(this.primaryKey);
+			} else if (action == "edit") {
+				this.templateModel = "./templates/crud-model_edit.html";
+				this.primaryKey = this.rufsService.getPrimaryKey(params.primaryKey);
+				promise = this.get(this.primaryKey);
 			}
-			
-			if (params.aggregate != undefined) {
-				Promise.resolve().then(() => this.applyAggregate(params.aggregate));
-			}
-			
-			if (params.sort != undefined) {
-				this.applySort(params.sort);
-			}
-			
-			if (params.pagination != undefined) {
-				this.paginate(params.pagination);
-			}
-		} else if (action == "new") {
-			this.templateModel = "./templates/crud-model_new.html";
-			this.setValues(params.overwrite);
-		} else if (action == "view") {
-			this.templateModel = "./templates/crud-model_view.html";
-			this.primaryKey = this.rufsService.getPrimaryKey(params.primaryKey);
-			this.get(this.primaryKey);
-		} else if (action == "edit") {
-			this.templateModel = "./templates/crud-model_edit.html";
-			this.primaryKey = this.rufsService.getPrimaryKey(params.primaryKey);
-			this.get(this.primaryKey);
-		}
+
+			return promise;
+		}).then(res => {
+			this.serverConnection.$scope.$apply();
+			return res;
+		})
 	}
 
 	// action: ["new", "update", "delete"]
-	onNotify(primaryKey, action) {
+	onNotify(schemaName, primaryKey, action) {
 		this.applyFilter();
 		this.applyAggregate();
 		this.applySort();
@@ -94,8 +103,7 @@ class CrudCommom extends CrudUiSkeleton {
 		return this.rufsService.get(primaryKey).then(response => {
 			this.original = response.data;
 			// atualiza as strings de referência
-			this.setValues(response.data);
-			return response;
+			return this.setValues(response.data).then(() => response);
 		});
 	}
 

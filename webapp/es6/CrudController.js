@@ -12,6 +12,7 @@ class CrudController extends CrudCommom {
 
     constructor(serverConnection, $scope) {
     	serverConnection.clearRemoteListeners();
+    	serverConnection.$scope = $scope;
     	const url = new URL(window.location.hash.substring(2), window.location.href);
     	const path = url.pathname;
 		const list = path.split('/');
@@ -22,10 +23,16 @@ class CrudController extends CrudCommom {
 		this.listItemCrudJson = [];
 		this.listObjCrudJson = [];
 		this.listCrudJsonArray = [];
-    	this.$scope = $scope;
     	this.searchParams = HttpRestRequest.urlSearchParamsToJson(url.searchParams, this.properties);
     	this.process(action, this.searchParams);
     }
+
+	process(action, params) {
+		return super.process(action, params).then(res => {
+			this.serverConnection.$scope.$apply();
+			return res;
+		});
+	}
 
     clickFilter() {
 		this.searchParams.filter = this.instanceFilter; 
@@ -34,8 +41,8 @@ class CrudController extends CrudCommom {
 		ServerConnectionUI.changeLocationHash(this.rufsService.path + "/" + "search", this.searchParams);
     }
 
-	onNotify(primaryKey, action) {
-		let ret = super.onNotify(primaryKey, action);
+	onNotify(schemaName, primaryKey, action) {
+		let ret = super.onNotify(schemaName, primaryKey, action);
 //   		this.$scope.$apply();
 		return ret;
 	}
@@ -65,7 +72,7 @@ class CrudController extends CrudCommom {
 			this.listItemCrudJson.forEach(item => item.get(this.instance));
 			this.listObjCrudJson.forEach(item => item.get(this.instance));
 			this.listCrudJsonArray.forEach(item => item.get(this.instance));
-    		this.$scope.$apply();
+			this.serverConnection.$scope.$apply();
     		return response;
     	});
     }

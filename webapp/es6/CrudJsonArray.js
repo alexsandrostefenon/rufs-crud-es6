@@ -20,7 +20,7 @@ class CrudJsonArray extends CrudUiSkeleton {
 			this.list = JSON.parse(data);
 		}
 		
-		this.process();
+		return this.process();
 	}
 	// private, use in addItem, updateItem and removeItem
 	updateParent() {
@@ -30,7 +30,7 @@ class CrudJsonArray extends CrudUiSkeleton {
 			this.parent.instance[this.fieldNameExternal] = this.list;
 		}
 
-		return this.parent.update();
+		return this.parent.update().then(() => this.serverConnection.$scope.$apply());
 	}
 
 	save() {
@@ -41,18 +41,19 @@ class CrudJsonArray extends CrudUiSkeleton {
 			this.list.push(this.instance);
 		}
 
-		this.updateParent();
+		return this.updateParent();
 	}
 
 	remove(index) {
 		this.list.splice(index, 1);
-		this.updateParent();
+		return this.updateParent();
 	}
 
 	edit(index) {
-		this.clear();
-		var item = this.list[index];
-		this.setValues(item);
+		this.clear().then(() => {
+			var item = this.list[index];
+			return this.setValues(item);
+		});
 	}
 
 	moveUp(index) {
@@ -62,7 +63,7 @@ class CrudJsonArray extends CrudUiSkeleton {
 			this.list[index] = tmp;
 		}
 
-		this.updateParent();
+		return this.updateParent();
 	}
 
 	moveDown(index) {
@@ -72,7 +73,7 @@ class CrudJsonArray extends CrudUiSkeleton {
 			this.list[index] = tmp;
 		}
 
-		this.updateParent();
+		return this.updateParent();
 	}
 
 }

@@ -153,19 +153,26 @@ class CrudUiSkeleton extends DataStoreItem {
 	process(action, params) {
 		for (let [fieldName, field] of Object.entries(this.properties)) field.filter = {};
 		this.buildFieldFilterResults();
-		super.process(action, params);
+		return super.process(action, params).then(res => {
+			this.serverConnection.$scope.$apply();
+			return res;
+		});
 	}
 	
 	setValues(obj) {
-		super.setValues(obj);
-		// fieldFirst is used in form_body html template
-		this.fieldFirst = undefined;
-		const list = Object.entries(this.properties);
-		let filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true && field.required == true && this.instance[fieldName] == undefined);
-		if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true && field.required == true);
-		if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true);
-		if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true);
-		if (filter.length > 0) this.fieldFirst = filter[0][0];
+		return super.setValues(obj, this.serverConnection).
+		then(() => {
+			// fieldFirst is used in form_body html template
+			this.fieldFirst = undefined;
+			const list = Object.entries(this.properties);
+			let filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true && field.required == true && this.instance[fieldName] == undefined);
+			if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true && field.required == true);
+			if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true);
+			if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true);
+			if (filter.length > 0) this.fieldFirst = filter[0][0];
+		}).then(() => {
+			this.serverConnection.$scope.$apply();
+		});
 	}
 
 	paginate(params) {
