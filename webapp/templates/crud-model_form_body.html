@@ -3,10 +3,10 @@
 	    <label for="{{fieldName}}" class="col-xs-4 col-form-label">{{vm.serverConnection.convertCaseAnyToLabel(field.label)}}</label>
 
 	    <div id="{{vm.formId}}-{{fieldName}}_controls" class="col-xs-6" ng-if="field.filterResultsStr == undefined">
-			<input                                              class="form-control" id="{{vm.formId}}-{{fieldName}}" name="{{fieldName}}" ng-required="field.required == true" ng-model="vm.instance[fieldName]"      ng-disabled="{{field.readOnly == true}}" type="{{field.htmlType}}" ng-change="vm.validateFieldChange(fieldName)" step="{{field.htmlStep}}" maxlength="{{field.length}}" placeholder="{{field.placeholder}}" autocomplete="off">
+			<input                                              class="form-control" id="{{vm.formId}}-{{fieldName}}" name="{{fieldName}}" ng-required="field.required == true" ng-model="vm.instance[fieldName]"      ng-disabled="{{field.readOnly == true}}" type="{{field.htmlType}}" ng-change="vm.validateFieldChange(fieldName)" step="{{field.htmlStep}}" maxlength="{{field.maxLength}}" placeholder="{{field.placeholder}}" autocomplete="off">
 	    </div>
 	    
-		<div ng-if="field.htmlType == 'number' && field.foreignKeysImport == undefined && field.readOnly == false">
+		<div ng-if="field.htmlType == 'number' && field.$ref == undefined && field.readOnly == false">
 	      <div class="col-xs-1">
 			<button class="form-control btn btn-default" ng-click="vm.instance[fieldName] = vm.instance[fieldName] + field.htmlStep"><span class="glyphicon glyphicon-plus"></span></button>
 	      </div>
@@ -24,11 +24,11 @@
             </datalist>
 	    </div>
 
-        <div class="col-xs-1" ng-if="field.foreignKeysImport != undefined && field.readOnly != true">
+        <div class="col-xs-1" ng-if="field.$ref != undefined && field.readOnly != true">
             <a id="{{vm.formId}}-create" name="create" class="btn btn-secondary" href="{{vm.goToField(fieldName, 'new')}}"><span class="glyphicon glyphicon-plus"></span></a>
         </div>
 
-        <div class="col-xs-1" ng-if="field.foreignKeysImport != undefined && field.readOnly != true">
+        <div class="col-xs-1" ng-if="field.$ref != undefined && field.readOnly != true">
             <a id="{{vm.formId}}-search" name="search" class="btn btn-secondary" href="{{vm.goToField(fieldName, 'search')}}"><span class="glyphicon glyphicon-search"></span></a>
         </div>
 	</div>

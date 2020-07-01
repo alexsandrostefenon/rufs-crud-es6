@@ -13,7 +13,7 @@ class CrudCommom extends CrudUiSkeleton {
 	
 	process(action, params) {
 		return super.process(action, params).then(() => {
-			let promise;
+			let promise = undefined;
 
 			if (action == "search") {
 				this.templateModel = "./templates/crud-model_search.html";
@@ -24,10 +24,11 @@ class CrudCommom extends CrudUiSkeleton {
 					}
 
 					this.applyFilter(params.filter, params.filterRangeMin, params.filterRangeMax);
+					promise = this.setPage(1);
 				}
 
 				if (params.aggregate != undefined) {
-					Promise.resolve().then(() => this.applyAggregate(params.aggregate));
+					promise = Promise.resolve().then(() => this.applyAggregate(params.aggregate));
 				}
 
 				if (params.sort != undefined) {
@@ -35,10 +36,11 @@ class CrudCommom extends CrudUiSkeleton {
 				}
 
 				if (params.pagination != undefined) {
-					this.paginate(params.pagination);
+					promise = this.paginate(params.pagination);
 				}
 
-				promise = Promise.resolve();
+				if (promise == undefined)
+					promise = Promise.resolve();
 			} else if (action == "new") {
 				this.templateModel = "./templates/crud-model_new.html";
 				promise = this.setValues(params.overwrite);
@@ -81,9 +83,9 @@ class CrudCommom extends CrudUiSkeleton {
     	let service;
     	let primaryKey = {};
 
-		if (field.foreignKeysImport != undefined) {
+		if (field.$ref != undefined) {
 			const item = this.serverConnection.getPrimaryKeyForeign(this.rufsService, fieldName, obj);
-			service = this.serverConnection.services[item.table];
+			service = this.serverConnection.getSchema(item.table);
 			primaryKey = item.primaryKey;
 		} else {
 			service = this.rufsService;

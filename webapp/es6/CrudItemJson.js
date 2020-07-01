@@ -29,6 +29,7 @@ class CrudItemJson extends CrudUiSkeleton {
 
 		if (objItemsStr != undefined && objItemsStr.length > 0) {
 			var objItems = JSON.parse(objItemsStr);
+			this.list = [];
 
 			for (var itemName in objItems) {
 				var objItem = objItems[itemName];
@@ -68,7 +69,7 @@ class CrudItemJson extends CrudUiSkeleton {
 		this.parent.instance[this.fieldNameExternal] = JSON.stringify(objItems);
 		this.restrictNameOptions();
 		this.parent.rufsService.params.saveAndExit = false;
-		return this.parent.update().then(parentInstance => this.get(parentInstance));
+		return this.parent.update().then(res => this.get(res.data));
 	}
 
 	save() {

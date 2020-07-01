@@ -8,7 +8,7 @@
 
     <div ng-if="vm.instance[vm.fieldFirst] != undefined" class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-            <button ng-if="vm.rufsService.params.access.update == true" id="{{vm.formId}}-add" name="add" class="btn btn-primary" ng-disabled="{{vm.formId}}.$invalid" ng-click="vm.save()"><span class="glyphicon glyphicon-plus"></span> Add</button>
+            <button ng-if="vm.rufsService.params.access.put == true" id="{{vm.formId}}-add" name="add" class="btn btn-primary" ng-disabled="{{vm.formId}}.$invalid" ng-click="vm.save()"><span class="glyphicon glyphicon-plus"></span> Add</button>
         </div>
     </div>
 </form>

@@ -6,8 +6,8 @@
     <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
 		<button id="{{vm.formId}}-cancel" name="cancel" class="btn btn-default" ng-click="vm.goToSearch()"><span class="glyphicon glyphicon-remove"></span> {{vm.translation.cancel}}</button>
-		<button ng-if="vm.rufsService.params.access.update == true" id="{{vm.formId}}-update" name="update" class="btn btn-primary" ng-disabled="vm.isClean() || {{vm.formId}}.$invalid" ng-click="vm.update()"><span class="glyphicon glyphicon-save"></span> {{vm.translation.save}}</button>
-		<button ng-if="vm.rufsService.params.access.create == true" id="{{vm.formId}}-save" name="save" class="btn btn-primary" ng-disabled="vm.isClean() || {{vm.formId}}.$invalid" ng-click="vm.saveAsNew()"><span class="glyphicon glyphicon-import"></span> {{vm.translation.saveAsNew}}</button>
+		<button ng-if="vm.rufsService.params.access.put == true" id="{{vm.formId}}-update" name="update" class="btn btn-primary" ng-disabled="vm.isClean() || {{vm.formId}}.$invalid" ng-click="vm.update()"><span class="glyphicon glyphicon-save"></span> {{vm.translation.save}}</button>
+		<button ng-if="vm.rufsService.params.access.post == true" id="{{vm.formId}}-save" name="save" class="btn btn-primary" ng-disabled="vm.isClean() || {{vm.formId}}.$invalid" ng-click="vm.saveAsNew()"><span class="glyphicon glyphicon-import"></span> {{vm.translation.saveAsNew}}</button>
 		<button ng-if="vm.rufsService.params.access.delete == true" id="{{vm.formId}}-delete" name="delete" class="btn btn-danger" ng-click="vm.remove()"><span class="glyphicon glyphicon-trash"></span> {{vm.translation.delete}}</button>
       </div>
     </div>

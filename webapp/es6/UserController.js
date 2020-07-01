@@ -12,10 +12,10 @@ class UserController extends CrudController {
 //      debugger;
     	// Regras de acesso aos serviços
 		const fieldsRoles = {
-    			"read":{type:"boolean", "default":true},
-    			"query":{type:"boolean", "default":true},
-    			"create":{type:"boolean", "default":false},
-    			"update":{type:"boolean", "default":false},
+    			"get":{type:"boolean", "default":true},
+    			"post":{type:"boolean", "default":false},
+    			"patch":{type:"boolean", "default":false},
+    			"put":{type:"boolean", "default":false},
     			"delete":{type:"boolean", "default":false}
     			};
 

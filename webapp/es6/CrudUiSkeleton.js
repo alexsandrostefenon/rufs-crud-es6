@@ -1,8 +1,8 @@
 import {Utils} from "./Utils.js";
 import {DataStoreItem, Filter} from "./DataStore.js";
-// differ of DataStoreItem by UI features, serverConnection and field.foreignKeysImport dependencies
+// differ of DataStoreItem by UI features, serverConnection and field.$ref dependencies
 class CrudUiSkeleton extends DataStoreItem {
-	
+
 	static calcPageSize() {
 		let pageSize;
 		let avaiableHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
@@ -41,11 +41,11 @@ class CrudUiSkeleton extends DataStoreItem {
 				field.htmlType = "date";
 			} else if (field.type == "time") {
 				field.htmlType = "time";
-			} else if (field.type == "datetime-local") {
+			} else if (field.type == "date-time") {
 				field.htmlType = "datetime-local";
 			}
 
-			if (field.enum == undefined && field.enumLabels == undefined && field.type == "string" && field.length == 1 && (field.default == "S" || field.default == "N")) {
+			if (field.enum == undefined && field.enumLabels == undefined && field.type == "string" && field.maxLength == 1 && (field.default == "S" || field.default == "N")) {
 				field.filterResults = field.enum = ["S", "N"];
 				field.filterResultsStr = field.enumLabels = ["Sim", "Não"];
 			}
@@ -80,7 +80,7 @@ class CrudUiSkeleton extends DataStoreItem {
 				field.htmlTypeIsRangeable = false;
 			}
 			
-			if (field.foreignKeysImport != undefined) {
+			if (field.$ref != undefined) {
 				field.htmlTypeIsRangeable = false;
 			}
 		}
@@ -98,7 +98,7 @@ class CrudUiSkeleton extends DataStoreItem {
 	buildFieldFilterResults() {
 		// faz uma referencia local a field.filterResultsStr, para permitir opção filtrada, sem alterar a referencia global
 		for (let [fieldName, field] of Object.entries(this.properties)) {
-			if (field.foreignKeysImport != undefined) {
+			if (field.$ref != undefined) {
 				const rufsService = this.serverConnection.getForeignService(this, fieldName);
 
 				if (rufsService != undefined) {
@@ -113,7 +113,12 @@ class CrudUiSkeleton extends DataStoreItem {
 
 							if (Filter.matchObject(field.filter, candidate, (a,b,fieldName) => a == b, false)) {
 								field.filterResults.push(candidate);
-								field.filterResultsStr.push(rufsService.listStr[i]);
+								const str = rufsService.listStr[i];
+
+								if (field.filterResultsStr.indexOf(str) < 0)
+									field.filterResultsStr.push(str);
+								else
+									console.error(`[${this.constructor.name}.buildFieldFilterResults(${this.name})] : already exists string in filterResultsStr :`, str);
 							}
 						}
 					} else {
@@ -121,7 +126,7 @@ class CrudUiSkeleton extends DataStoreItem {
 						field.filterResultsStr = rufsService.listStr;
 					}
 				} else {
-					console.warn("don't have acess to service ", field.foreignKeysImport);
+					console.warn("don't have acess to service ", field.$ref);
 					field.filterResults = [];
 					field.filterResultsStr = [];
 				}
@@ -170,7 +175,8 @@ class CrudUiSkeleton extends DataStoreItem {
 			if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true);
 			if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true);
 			if (filter.length > 0) this.fieldFirst = filter[0][0];
-		}).then(() => {
+		}).
+		then(() => {
 			this.serverConnection.$scope.$apply();
 		});
 	}
@@ -179,9 +185,34 @@ class CrudUiSkeleton extends DataStoreItem {
 		if (params == undefined) params = {};
 		if (params.pageSize == undefined) params.pageSize = CrudUiSkeleton.calcPageSize();
 		if (params.pageSize < 10) params.pageSize = 10;
-		this.pagination.paginate(this.filterResults, params.pageSize, params.page);
+		return super.paginate(params).then(() => this.setPage(1));
 	}
-	
+
+    setPage(page) {
+    	this.pagination.setPage(page);
+
+     	const next = (service, list, index) => {
+     		if (index >= list.length) return Promise.resolve();
+     		const item = list[index];
+     		console.log(`[${this.constructor.name}.setPage(${this.name})] : updating references to register ${index}`, service.getPrimaryKey(item));
+     		return this.serverConnection.getDocument(this.name, item, false).then(() => next(service, list, ++index));
+     	}
+
+		const service = this.serverConnection.getSchema(this.name);
+		let promise;
+
+    	if (service != undefined) {
+			promise = next(service, this.pagination.listPage, 0).
+			then(() => {
+				this.serverConnection.$scope.$apply();
+			});
+    	} else {
+    		promise = Promise.resolve();
+    	}
+
+    	return promise;
+	}
+
     validateFieldChange(fieldName, newValue, oldValue) {
     	console.log(`[CrudUiSkeleton.validateFieldChange(fieldName=${fieldName}, newValue=${newValue}, oldValue=${oldValue})] this.instance[${fieldName}] = ${this.instance[fieldName]}`);
     	return true;
@@ -201,7 +232,7 @@ class CrudUiSkeleton extends DataStoreItem {
 				const oldValue = instance[fieldName];
 				let newValue;
 
-				if (field.foreignKeysImport != undefined) {
+				if (field.$ref != undefined) {
 					const foreignData = field.filterResults[pos];
 					const foreignKey = this.serverConnection.getForeignKey(this, fieldName, foreignData);
 					newValue = foreignKey[fieldName];

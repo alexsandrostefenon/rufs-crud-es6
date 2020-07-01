@@ -38,12 +38,23 @@ class CrudServiceUI extends RufsService {
 			return null;
 		}
 
+		const assertExists = (list, str, action, params) => {
+			const pos = list.indexOf(str);
+
+			if (pos >= 0) {
+				console.error(`[${this.constructor.name}.updateListStr(${this.name}, ${action})] : already exists string in listStr : list.length = ${list.length}, pos = ${pos}, oldPos = ${params.oldPos}, newPos = ${params.newPos}, str = ${str})`);
+				console.trace();
+				debugger;
+
+			}
+		}
+
 		let str = params.data == undefined ? null : this.buildItemStr(params.data);
 
         if (params.oldPos == undefined && params.newPos == undefined) {
         	// add
+        	assertExists(this.listStr, str, "add", params);
         	this.listStr.push(str);
-			console.log(`[${this.constructor.name}.updateListStr(${this.name}, ${params.oldPos}, ${params.newPos})] add :`, str);
         } else if (params.oldPos != undefined && params.newPos == undefined) {
         	// remove
         	this.listStr.splice(params.oldPos, 1);
@@ -55,8 +66,8 @@ class CrudServiceUI extends RufsService {
         } else if (params.oldPos != undefined && params.newPos != undefined) {
         	// remove and add
         	this.listStr.splice(params.oldPos, 1);
+        	assertExists(this.listStr, str, "remove and add", params);
         	this.listStr.splice(params.newPos, 0, str);
-			console.log(`[${this.constructor.name}.updateListStr(${this.name}, ${params.oldPos}, ${params.newPos})] remove and add :`, str);
         }
         
         return params;
@@ -149,7 +160,7 @@ class ServerConnectionUI extends ServerConnection {
 	}
 	// used by websocket
 	removeInternal(schemaName, primaryKey) {
-		const schema = this.getService(schemaName);
+		const schema = this.getSchema(schemaName);
 		if (schema == undefined) return undefined;
 		let response = super.removeInternal(schemaName, primaryKey);
 
@@ -165,7 +176,8 @@ class ServerConnectionUI extends ServerConnection {
 	get(schemaName, primaryKey, ignoreCache) {
 		return super.get(schemaName, primaryKey, ignoreCache).
 		then(response => {
-			const service = this.getService(schemaName);
+			if (response.isCache == true) return response;
+			const service = this.getSchema(schemaName);
 			return service.updateListStr(response);
 		});
 	}

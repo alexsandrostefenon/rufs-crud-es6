@@ -30,7 +30,7 @@
 			</datalist>
 		</div>
 
-		<div class="col-xs-1" ng-if="field.foreignKeysImport != undefined">
+		<div class="col-xs-1" ng-if="field.$ref != undefined">
 			<a id="{{vm.formId}}-search" name="search" class="btn btn-secondary" href="{{vm.goToField(fieldName, 'search')}}"><span class="glyphicon glyphicon-search"></span></a>
 		</div>
 	</div>

@@ -18,6 +18,14 @@ class CrudController extends CrudCommom {
 		const list = path.split('/');
 		const action = list[list.length-1];
 		const serviceName = CaseConvert.underscoreToCamel(list[list.length-2]);
+		const service = serverConnection.services[serviceName];
+
+		if (service == undefined) {
+			const msg = `[CrudController.constructor(${serviceName})] : service not registred in serverConnection`;
+			console.error(msg);
+			throw new Error(msg);
+		}
+
     	super(serverConnection, serverConnection.services[serviceName]);
 		this.listItemCrud = [];
 		this.listItemCrudJson = [];
