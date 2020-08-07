@@ -24,7 +24,11 @@
             </datalist>
 	    </div>
 
-        <div class="col-xs-1" ng-if="field.$ref != undefined && field.readOnly != true">
+        <div class="col-xs-1" ng-if="field.$ref != undefined && vm.instance[fieldName] != undefined">
+            <a id="{{vm.formId}}-view" name="view" class="btn btn-secondary" href="{{vm.goToField(fieldName, 'view', vm.instance, false)}}"><span class="glyphicon glyphicon-eye-open"></span></a>
+        </div>
+
+        <div class="col-xs-1" ng-if="field.$ref != undefined && field.readOnly != true && vm.instance[fieldName] == undefined">
             <a id="{{vm.formId}}-create" name="create" class="btn btn-secondary" href="{{vm.goToField(fieldName, 'new')}}"><span class="glyphicon glyphicon-plus"></span></a>
         </div>
 

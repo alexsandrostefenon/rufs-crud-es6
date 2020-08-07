@@ -1,3 +1,4 @@
+import {OpenApi} from "./OpenApi.js";
 import {CrudUiSkeleton} from "./CrudUiSkeleton.js";
 import {ServerConnectionUI} from "./ServerConnectionUI.js";
 // differ from CrudUiSkeleton by rufsService dependency
@@ -9,9 +10,30 @@ class CrudCommom extends CrudUiSkeleton {
 		this.list = this.rufsService.list;
 		this.serverConnection.addRemoteListener(this);
 		this.activeTab = 0;
+		this.activeSchemaType = "schema";
 	}
-	
+
 	process(action, params) {
+		if (action == "new") {
+			if (this.activeSchemaType != "requestBody") {
+				const schema = OpenApi.getSchemaFromRequestBodies(this.serverConnection.openapi, this.rufsService.name);
+
+				if (schema != undefined) {
+					this.setSchema(schema);
+					this.activeSchemaType = "requestBody";
+					this.updateFields();
+				}
+			}
+		} else if (this.activeSchemaType != "schema") {
+			const schema = OpenApi.getSchemaFromSchemas(this.serverConnection.openapi, this.rufsService.name);
+
+			if (schema != undefined) {
+				this.setSchema(schema);
+				this.activeSchemaType = "schema";
+				this.updateFields();
+			}
+		}
+
 		return super.process(action, params).then(() => {
 			let promise = undefined;
 
@@ -118,12 +140,20 @@ class CrudCommom extends CrudUiSkeleton {
 	}
 
 	update() {
-		return this.rufsService.update(this.primaryKey, this.instance);
+		return this.rufsService.update(this.primaryKey, this.instance).
+		then(response => {
+			this.original = response.data;
+			return response;
+		});
 	}
 
 	save() {
 		this.primaryKey = {};
-		return this.rufsService.save(this.instance);
+		return this.rufsService.save(this.instance).
+		then(response => {
+			this.original = response.data;
+			return response;
+		});
 	}
 
 	applyAggregate(aggregate) {

@@ -1,3 +1,4 @@
+import {OpenApi} from "./OpenApi.js";
 import {CaseConvert} from "./CaseConvert.js";
 import {RufsSchema} from "./DataStore.js";
 import {HttpRestRequest} from "./ServerConnection.js";
@@ -29,9 +30,10 @@ class CrudController extends CrudCommom {
     	super(serverConnection, serverConnection.services[serviceName]);
 		this.listItemCrud = [];
 		this.listItemCrudJson = [];
-		this.listObjCrudJson = [];
+		this.listCrudObjJson = [];
 		this.listCrudJsonArray = [];
-    	this.searchParams = HttpRestRequest.urlSearchParamsToJson(url.searchParams, this.properties);
+		this.listCrudObjJsonResponse = [];
+    	this.searchParams = HttpRestRequest.urlSearchParamsToJson(url.search, this.properties);
     	this.process(action, this.searchParams);
     }
 
@@ -78,7 +80,7 @@ class CrudController extends CrudCommom {
 			}
 
 			this.listItemCrudJson.forEach(item => item.get(this.instance));
-			this.listObjCrudJson.forEach(item => item.get(this.instance));
+			this.listCrudObjJson.forEach(item => item.get(this.instance));
 			this.listCrudJsonArray.forEach(item => item.get(this.instance));
 			this.serverConnection.$scope.$apply();
     		return response;
@@ -111,16 +113,23 @@ class CrudController extends CrudCommom {
 		return super.save().then(response => {
 			var primaryKey = this.rufsService.getPrimaryKey(response.data);
 
-			for (let item of this.listItemCrud) {
-				item.clone(primaryKey);
-			}
-			// TODO : load saveAndExit from method process(action,params)
-			if (this.rufsService.params.saveAndExit != false) {
-				this.goToSearch();
+			if (primaryKey != undefined && primaryKey != null && Object.entries(primaryKey).length > 0) {
+				for (let item of this.listItemCrud) {
+					item.clone(primaryKey);
+				}
+				// TODO : load saveAndExit from method process(action,params)
+				if (this.rufsService.params.saveAndExit != false) {
+					this.goToSearch();
+				} else {
+					ServerConnectionUI.changeLocationHash(this.rufsService.path + "/" + "edit", {primaryKey});
+				}
 			} else {
-				ServerConnectionUI.changeLocationHash(this.rufsService.path + "/" + "edit", {primaryKey});
+				const schema = OpenApi.getSchemaFromSchemas(this.serverConnection.openapi, this.rufsService.name);
+				const crudObjJson = new CrudObjJson(this, schema.properties, "", `Resposta ${this.listCrudObjJsonResponse.length + 1}`, this.serverConnection);
+				crudObjJson.get(response.data);
+		    	this.listCrudObjJsonResponse.unshift(crudObjJson);
 			}
-			
+
 			return response;
 		});
 	}

@@ -4,9 +4,9 @@ import {CrudController} from "./CrudController.js";
 
 class CrudServiceUI extends RufsService {
 
-	constructor(name, params, serverConnection, httpRest) {
-		super(name, params, serverConnection, httpRest);
-		this.label = (params.title == undefined || params.title == null) ? serverConnection.convertCaseAnyToLabel(this.path) : params.title;
+	constructor(name, schema, serverConnection, httpRest) {
+		super(name, schema, serverConnection, httpRest);
+		this.label = (schema.title == undefined || schema.title == null) ? serverConnection.convertCaseAnyToLabel(this.path) : schema.title;
 		this.listStr = [];
 	}
 	// private
@@ -51,11 +51,11 @@ class CrudServiceUI extends RufsService {
 
 		let str = params.data == undefined ? null : this.buildItemStr(params.data);
 
-        if (params.oldPos == undefined && params.newPos == undefined) {
+        if (params.oldPos == undefined) {
         	// add
         	assertExists(this.listStr, str, "add", params);
         	this.listStr.push(str);
-        } else if (params.oldPos != undefined && params.newPos == undefined) {
+        } else if (params.newPos == undefined) {
         	// remove
         	this.listStr.splice(params.oldPos, 1);
 			console.log(`[${this.constructor.name}.updateListStr(${this.name}, ${params.oldPos}, ${params.newPos})] remove :`, str);
@@ -63,7 +63,7 @@ class CrudServiceUI extends RufsService {
         	// replace
         	this.listStr[params.newPos] = str;
 			console.log(`[${this.constructor.name}.updateListStr(${this.name}, ${params.oldPos}, ${params.newPos})] replace :`, str);
-        } else if (params.oldPos != undefined && params.newPos != undefined) {
+        } else if (params.newPos != undefined) {
         	// remove and add
         	this.listStr.splice(params.oldPos, 1);
         	assertExists(this.listStr, str, "remove and add", params);
@@ -117,7 +117,7 @@ class ServerConnectionUI extends ServerConnection {
 		let hash = "#!/app/" + hashPath;
 
 		if (hashSearchObj != undefined) {
-			hash = hash + "?" + HttpRestRequest.jsonToURLSearchParams(hashSearchObj).toString();
+			hash = hash + "?" + Qs.stringify(hashSearchObj, {allowDots: true});
 		}
 		
 		return hash;

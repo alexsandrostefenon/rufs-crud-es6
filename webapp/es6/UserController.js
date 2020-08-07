@@ -42,7 +42,7 @@ class UserController extends CrudController {
     			"modules":{"default":"es6/CrudController.js"}
     			};
 
-    	this.listObjCrudJson.push(new CrudObjJson(this, fieldsConfig, this.instance, "config", "Configurações", this.serverConnection));
+    	this.listCrudObjJson.push(new CrudObjJson(this, fieldsConfig, this.instance, "config", "Configurações", this.serverConnection));
 */
     	const fieldsRoute = {
     			"path":{"primaryKey":true, "default":"/app/xxx/:action"},

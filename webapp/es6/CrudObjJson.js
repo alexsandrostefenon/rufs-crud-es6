@@ -2,7 +2,7 @@ import {CrudUiSkeleton} from "./CrudUiSkeleton.js";
 
 class CrudObjJson extends CrudUiSkeleton {
 
-	constructor(parent, properties, fieldNameExternal, title, serverConnection) {
+	constructor(parent, properties, fieldNameExternal, title, serverConnection, selectCallback) {
 		super(serverConnection, fieldNameExternal, {"properties": properties}, selectCallback);
 		this.parent = parent;
 		this.fieldNameExternal = fieldNameExternal;
@@ -13,15 +13,25 @@ class CrudObjJson extends CrudUiSkeleton {
 			field._label = serverConnection.convertCaseAnyToLabel(fieldName);
 		}
 
-		var obj = JSON.parse(this.instanceExternal[this.fieldNameExternal]);
+		if (this.fieldNameExternal != undefined && this.fieldNameExternal != null && this.fieldNameExternal.length > 0) {
+			var obj = JSON.parse(this.instanceExternal[this.fieldNameExternal]);
 
-		for (var fieldName in obj) {
-			this.instance[fieldName] = obj[fieldName];
+			for (var fieldName in obj) {
+				this.instance[fieldName] = obj[fieldName];
+			}
 		}
+
+		this.buildFieldFilterResults();
 	}
 
 	save() {
-		this.instanceExternal[this.fieldNameExternal] = JSON.stringify(this.instance);
+		if (this.fieldNameExternal != undefined && this.fieldNameExternal != null && this.fieldNameExternal.length > 0) {
+			this.instanceExternal[this.fieldNameExternal] = JSON.stringify(this.instance);
+		}
+	}
+
+	get(data) {
+		return this.process().then(() => this.setValues(data));
 	}
 
 }

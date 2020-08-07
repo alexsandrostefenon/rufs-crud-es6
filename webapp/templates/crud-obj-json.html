@@ -2,24 +2,15 @@
 <h3>{{vm.title}}</h3>
 
 <form id="{{vm.formId}}" name="{{vm.formId}}" class="form-horizontal" role="form" ng-if="edit == true">
-    <div ng-if="displayError" class="alert alert-danger">
-        <strong>Error!</strong> Something broke. Retry, or cancel and start afresh.
+	<div ng-include="'./templates/crud-model_form_body.html'"></div>
+
+    <div ng-if="vm.instance[vm.fieldFirst].length > 0" class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button id="{{vm.formId}}-add" name="add" class="btn btn-primary" ng-disabled="{{vm.formId}}.$invalid" ng-click="vm.save()"><span class="glyphicon glyphicon-plus"></span> Add</button>
+        </div>
     </div>
+</form>
 
-	<div ng-repeat="(fieldName,field) in vm.properties" class="form-group" ng-class="{'has-error': {{vm.formId}}.{{fieldName}}.$invalid}">
-	    <label for="{{fieldName}}" class="col-sm-2 control-label">{{field._label}}</label>
-
-	    <div id="{{vm.formId}}-{{fieldName}}_controls" class="col-sm-10">
-			<input ng-if="field.enum == undefined" class="form-control" id="{{vm.formId}}-{{fieldName}}" name="{{fieldName}}" type="text" ng-model="vm.instance[fieldName]" placeholder="{{field.placeholder}}"></input>
-			<input  ng-if="field.enum != undefined && field.enum.length >  50" class="form-control" id="{{vm.formId}}-{{fieldName}}" name="{{fieldName}}" ng-model="vm.instance[fieldName]" list="{{vm.formId}}-{{fieldName}}-list" type="text" autocomplete="off">
-			<select ng-if="field.enum != undefined && field.enum.length <= 50" class="form-control" id="{{vm.formId}}-{{fieldName}}" name="{{fieldName}}" ng-model="vm.instance[fieldName]" ng-options="o for o in field.enum | filter:$viewValue | limitTo:100"></select>
-            <datalist id="{{vm.formId}}-{{fieldName}}-list">
-                <option ng-repeat="o in field.enum" value="{{o}}"/>
-            </datalist>
-	    </div>
-	</div>
-
-    <div class="col-sm-offset-2 col-sm-10">
-        <button id="{{vm.formId}}-add" name="add" class="btn btn-primary" ng-disabled="{{vm.formId}}.$invalid" ng-click="vm.save()"><span class="glyphicon glyphicon-plus"></span> Set</button>
-    </div>
+<form id="{{vm.formId}}" name="{{vm.formId}}" class="form-horizontal" role="form" ng-if="edit == false">
+	<div ng-include="'./templates/crud-model_form_body_view.html'"></div>
 </form>
