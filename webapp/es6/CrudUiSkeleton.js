@@ -92,6 +92,11 @@ class CrudUiSkeleton extends DataStoreItem {
 		this.translation = serverConnection.translation;
 		this.formId = name + "Form";
 		this.selectCallback = selectCallback;
+		this.listItemCrud = [];
+		this.listItemCrudJson = [];
+		this.listCrudObjJson = [];
+		this.listCrudJsonArray = [];
+		this.listCrudObjJsonResponse = [];
 		this.updateFields();
 	}
 
@@ -164,8 +169,8 @@ class CrudUiSkeleton extends DataStoreItem {
 		});
 	}
 	
-	setValues(obj) {
-		return super.setValues(obj, this.serverConnection).
+	setValues(obj, enableDefault) {
+		return super.setValues(obj, enableDefault, this.serverConnection).
 		then(() => {
 			// fieldFirst is used in form_body html template
 			this.fieldFirst = undefined;

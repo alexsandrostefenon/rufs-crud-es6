@@ -52,7 +52,7 @@ class CrudJsonArray extends CrudUiSkeleton {
 	edit(index) {
 		this.clear().then(() => {
 			var item = this.list[index];
-			return this.setValues(item);
+			return this.setValues(item, false);
 		});
 	}
 

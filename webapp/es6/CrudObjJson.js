@@ -1,4 +1,5 @@
 import {CrudUiSkeleton} from "./CrudUiSkeleton.js";
+import {CrudJsonArray} from "./CrudJsonArray.js";
 
 class CrudObjJson extends CrudUiSkeleton {
 
@@ -21,6 +22,13 @@ class CrudObjJson extends CrudUiSkeleton {
 			}
 		}
 
+		for (let [fieldName, property] of Object.entries(properties)) {
+			if (property.type == "array" && property.hiden != true) {
+				// 	constructor(parent, properties, fieldNameExternal, title, serverConnection) {
+				this.listCrudJsonArray.push(new CrudJsonArray(this, property.items.properties, fieldName, fieldName, this.serverConnection));
+			}
+		}
+
 		this.buildFieldFilterResults();
 	}
 
@@ -31,7 +39,11 @@ class CrudObjJson extends CrudUiSkeleton {
 	}
 
 	get(data) {
-		return this.process().then(() => this.setValues(data));
+		return this.process().
+		then(() => {
+			for (let crudJsonArray of this.listCrudJsonArray) crudJsonArray.get(data);
+			return this.setValues(data, false);
+		});
 	}
 
 }

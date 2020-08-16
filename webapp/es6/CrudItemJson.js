@@ -110,7 +110,7 @@ class CrudItemJson extends CrudUiSkeleton {
 				this.buildFieldFilterResults();
 			}
 
-			return this.setValues(item);
+			return this.setValues(item, false);
 		});
 	}
 

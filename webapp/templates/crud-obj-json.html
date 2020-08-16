@@ -14,3 +14,5 @@
 <form id="{{vm.formId}}" name="{{vm.formId}}" class="form-horizontal" role="form" ng-if="edit == false">
 	<div ng-include="'./templates/crud-model_form_body_view.html'"></div>
 </form>
+
+<crud-json-array ng-repeat="item in vm.listCrudJsonArray" vm="item" edit="edit"></crud-json-array>

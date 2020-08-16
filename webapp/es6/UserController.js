@@ -3,6 +3,7 @@ import {CrudItemJson} from "./CrudItemJson.js";
 import {CrudObjJson} from "./CrudObjJson.js";
 import {CrudJsonArray} from "./CrudJsonArray.js";
 import {CaseConvert} from "./CaseConvert.js";
+import {HttpRestRequest} from "./ServerConnection.js";
 
 class UserController extends CrudController {
 
@@ -54,6 +55,11 @@ class UserController extends CrudController {
 //        this.rufsItemService = new CrudItem(this.serverConnection, "requestService", "request", this.primaryKey, 'Serviços', null, list => onServicesChanged(list), (field, id) => onServiceSelected(field, id));
     }
 
+	save() {
+	    this.instance.password = HttpRestRequest.MD5(this.instance.password);
+		return super.save();
+	}
+
     update() {
         const addMenu = (serviceName, menu) => {
             /*
@@ -90,6 +96,7 @@ routes : '[{"path":"/app/request/:action","controller":"RequestController"}]'
 
         this.instance.roles = JSON.stringify(newRoles);
         this.instance.menu = JSON.stringify(menu);
+        if (this.instance.password.length < 32) this.instance.password = HttpRestRequest.MD5(this.instance.password);
         return super.update();
     }
 

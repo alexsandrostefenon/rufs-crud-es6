@@ -71,7 +71,7 @@ class CrudItem extends CrudCommom {
 
     		this.selectCallback(fieldName);
 			// update UI
-			this.setValues(this.instance);
+			this.setValues(this.instance, false);
     	}
 
     	return ret;

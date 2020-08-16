@@ -34,7 +34,7 @@ class LoginController {
     login() {
     	// TODO : resolve path to load from UI
     	this.path = "";
-    	return this.serverConnection.login(this.server, this.path, this.user.toLowerCase(), this.password, message => this.message = message, this.dbUri);
+    	return this.serverConnection.login(this.server, this.path, this.user, HttpRestRequest.MD5(this.password), message => this.message = message, this.dbUri);
     }
 
 }

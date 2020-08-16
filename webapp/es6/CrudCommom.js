@@ -65,7 +65,7 @@ class CrudCommom extends CrudUiSkeleton {
 					promise = Promise.resolve();
 			} else if (action == "new") {
 				this.templateModel = "./templates/crud-model_new.html";
-				promise = this.setValues(params.overwrite);
+				promise = this.setValues(params.overwrite, true);
 			} else if (action == "view") {
 				this.templateModel = "./templates/crud-model_view.html";
 				this.primaryKey = this.rufsService.getPrimaryKey(params.primaryKey);
@@ -127,7 +127,7 @@ class CrudCommom extends CrudUiSkeleton {
 		return this.rufsService.get(primaryKey).then(response => {
 			this.original = response.data;
 			// atualiza as strings de referência
-			return this.setValues(response.data).then(() => response);
+			return this.setValues(response.data, false).then(() => response);
 		});
 	}
 

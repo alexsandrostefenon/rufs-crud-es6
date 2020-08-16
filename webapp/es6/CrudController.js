@@ -28,11 +28,6 @@ class CrudController extends CrudCommom {
 		}
 
     	super(serverConnection, serverConnection.services[serviceName]);
-		this.listItemCrud = [];
-		this.listItemCrudJson = [];
-		this.listCrudObjJson = [];
-		this.listCrudJsonArray = [];
-		this.listCrudObjJsonResponse = [];
     	this.searchParams = HttpRestRequest.urlSearchParamsToJson(url.search, this.properties);
     	this.process(action, this.searchParams);
     }
