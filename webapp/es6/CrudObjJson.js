@@ -22,13 +22,6 @@ class CrudObjJson extends CrudUiSkeleton {
 			}
 		}
 
-		for (let [fieldName, property] of Object.entries(properties)) {
-			if (property.type == "array" && property.hiden != true) {
-				// 	constructor(parent, properties, fieldNameExternal, title, serverConnection) {
-				this.listCrudJsonArray.push(new CrudJsonArray(this, property.items.properties, fieldName, fieldName, this.serverConnection));
-			}
-		}
-
 		this.buildFieldFilterResults();
 	}
 
@@ -47,5 +40,7 @@ class CrudObjJson extends CrudUiSkeleton {
 	}
 
 }
+
+CrudUiSkeleton.CrudObjJson = CrudObjJson;
 
 export {CrudObjJson}

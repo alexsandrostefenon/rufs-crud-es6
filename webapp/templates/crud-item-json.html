@@ -13,7 +13,7 @@
     </div>
 </form>
 
-<div class="table-responsive" style="white-space: nowrap;">
+<div ng-if="edit == true || vm.filterResults.length > 0" class="table-responsive" style="white-space: nowrap;">
 	<table class="table table-responsive table-bordered table-striped clearfix">
 	    <thead>
 	        <tr>
@@ -28,10 +28,10 @@
 	    <tbody id="{{vm.formId}}-crud-table-body">
 	            <tr ng-repeat="item in vm.pagination.listPage">
 				<td>
-					<a href ng-click="vm.edit(item._name)" id="{{vm.formId}}-edit-{{item._name}}"><span class="glyphicon glyphicon-trash"></span> Edit</a>
-					<a href ng-click="vm.remove(item._name)" id="{{vm.formId}}-remove-{{item._name}}"><span class="glyphicon glyphicon-trash"></span> Delete</a>
-					<a href ng-click="vm.moveUp(item._name)" id="{{vm.formId}}-move_up-{{item._name}}"><span class="glyphicon glyphicon-arrow-up"></span> Up</a>
-					<a href ng-click="vm.moveDown(item._name)" id="{{vm.formId}}-move_down-{{item._name}}"><span class="glyphicon glyphicon-arrow-down"></span> Down</a>
+					<a ng-if="edit == true" href ng-click="vm.edit(item._name)" id="{{vm.formId}}-edit-{{item._name}}"><span class="glyphicon glyphicon-trash"></span> Edit</a>
+					<a ng-if="edit == true" href ng-click="vm.remove(item._name)" id="{{vm.formId}}-remove-{{item._name}}"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+					<a ng-if="edit == true" href ng-click="vm.moveUp(item._name)" id="{{vm.formId}}-move_up-{{item._name}}"><span class="glyphicon glyphicon-arrow-up"></span> Up</a>
+					<a ng-if="edit == true" href ng-click="vm.moveDown(item._name)" id="{{vm.formId}}-move_down-{{item._name}}"><span class="glyphicon glyphicon-arrow-down"></span> Down</a>
 				</td>
                 <td ng-repeat="fieldName in vm.fieldsTable">
 					<a href="{{vm.goToField(fieldName, 'view', item, false)}}">{{vm.buildFieldStr(fieldName, item)}}</a>

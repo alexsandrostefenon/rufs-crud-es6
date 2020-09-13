@@ -10,7 +10,6 @@ class UserController extends CrudController {
     constructor(serverConnection, $scope) {
     	super(serverConnection, $scope);
         this.properties["password"].htmlType = "password";
-//      debugger;
     	// Regras de acesso aos serviços
 		const fieldsRoles = {
     			"get":{type:"boolean", "default":true},
@@ -38,21 +37,13 @@ class UserController extends CrudController {
 
     	this.listItemCrudJson.push(new CrudItemJson(this, fieldsMenu, "menu", "Menu", this.serverConnection));
     	// Configurações Json
-/*
-    	var fieldsConfig = {
-    			"modules":{"default":"es6/CrudController.js"}
-    			};
-
-    	this.listCrudObjJson.push(new CrudObjJson(this, fieldsConfig, this.instance, "config", "Configurações", this.serverConnection));
-*/
     	const fieldsRoute = {
     			"path":{"primaryKey":true, "default":"/app/xxx/:action"},
     			"templateUrl":{"default":"./templates/crud.html"},
     			"controller":{"default":"CrudController"},
     			};
     	// fields, instanceExternal, fieldNameExternal, title, serverConnection, selectCallback
-    	this.listCrudJsonArray.push(new CrudJsonArray(this, fieldsRoute, "routes", "Rotas de URL AngularJs", this.serverConnection));
-//        this.rufsItemService = new CrudItem(this.serverConnection, "requestService", "request", this.primaryKey, 'Serviços', null, list => onServicesChanged(list), (field, id) => onServiceSelected(field, id));
+    	this.listCrudJsonArray.push(new CrudJsonArray(this, fieldsRoute, "routes", {"title": "Rotas de URL AngularJs"}, this.serverConnection));
     }
 
 	save() {

@@ -56,6 +56,7 @@ class CrudController extends CrudCommom {
     	return super.get(primaryKey).then(response => {
 			// monta a lista dos CrudItem
     		const dependents = this.serverConnection.getDependents(this.rufsService.name);
+
 			for (let item of dependents) {
 				const rufsServiceOther = this.serverConnection.services[item.table];
 
@@ -74,9 +75,6 @@ class CrudController extends CrudCommom {
 				}
 			}
 
-			this.listItemCrudJson.forEach(item => item.get(this.instance));
-			this.listCrudObjJson.forEach(item => item.get(this.instance));
-			this.listCrudJsonArray.forEach(item => item.get(this.instance));
 			this.serverConnection.$scope.$apply();
     		return response;
     	});

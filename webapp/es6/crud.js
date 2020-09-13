@@ -8,22 +8,20 @@ class ServerConnectionService extends ServerConnectionUI {
 		super($locale, $route, $rootScope, $q, $timeout, $controllerProvider, $routeProvider);
     }
 
-    login(server, path, user, password, callbackPartial, dbUri) {
-        return super.login(server, path, user, password, CrudServiceUI, callbackPartial, dbUri);
+    login(server, path, user, password, callbackPartial) {
+        return super.login(server, path, user, password, CrudServiceUI, callbackPartial);
     }
 
 }
 
 class LoginController {
 
-    constructor(serverConnection, server, dbUri) {
+    constructor(serverConnection, server) {
 		this.serverConnection = serverConnection;
 		this.server = server;
-		this.dbUri = dbUri;
 		this.user = "";
 		this.password = "";
 		this.message = "";
-		console.log(`User query param dbUri=postgresql://dbuser:secretpassword@database.server.com:3211/mydb`);
 
 	  	if (this.serverConnection.user != undefined) {
 	    	this.serverConnection.logout();
@@ -34,7 +32,7 @@ class LoginController {
     login() {
     	// TODO : resolve path to load from UI
     	this.path = "";
-    	return this.serverConnection.login(this.server, this.path, this.user, HttpRestRequest.MD5(this.password), message => this.message = message, this.dbUri);
+    	return this.serverConnection.login(this.server, this.path, this.user, HttpRestRequest.MD5(this.password), message => this.message = message);
     }
 
 }
@@ -67,9 +65,8 @@ class Crud {
     	$controllerProvider.register('LoginController', function(ServerConnectionService) {
     		const url = new URL(window.location.hash.substring(2), window.location.href);
     		const server = url.searchParams.get("server");
-    		const dbUri = url.searchParams.get("dbUri");
     		console.log("Crud.initialize : LoginController.server = ", server);
-    		return new LoginController(ServerConnectionService, server, dbUri);
+    		return new LoginController(ServerConnectionService, server);
     	});
 
     	$controllerProvider.register("MenuController", function(ServerConnectionService) {

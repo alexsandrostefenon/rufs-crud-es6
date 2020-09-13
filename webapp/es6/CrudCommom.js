@@ -101,23 +101,18 @@ class CrudCommom extends CrudUiSkeleton {
 	}
 	// fieldName, 'view', item, false
     goToField(fieldName, action, obj, isGoNow) {
-    	const field = this.properties[fieldName];
-    	let service;
-    	let primaryKey = {};
+//    	console.log(`[${this.constructor.name}.goToField(${fieldName}, ${action})]`);
+		let url = super.goToField(fieldName, action, obj);
 
-		if (field.$ref != undefined) {
-			const item = this.serverConnection.getPrimaryKeyForeign(this.rufsService, fieldName, obj);
-			service = this.serverConnection.getSchema(item.table);
-			primaryKey = item.primaryKey;
-		} else {
-			service = this.rufsService;
-			primaryKey = this.rufsService.getPrimaryKey(obj);
+		if (url == "") {
+			const service = this.rufsService;
+			const primaryKey = this.rufsService.getPrimaryKey(obj);
+			url = ServerConnectionUI.buildLocationHash(service.path + "/" + action, {primaryKey});
 		}
 
-		const url = ServerConnectionUI.buildLocationHash(service.path + "/" + action, {primaryKey});
-
     	if (isGoNow == true) {
-    		ServerConnectionUI.changeLocationHash(service.path + "/" + action, {primaryKey});
+//    		ServerConnectionUI.changeLocationHash(service.path + "/" + action, {primaryKey});
+    		ServerConnectionUI.changeLocationHash(url);
     	}
 
     	return url;

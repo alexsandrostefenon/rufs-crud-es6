@@ -1,5 +1,8 @@
+import {OpenApi} from "./OpenApi.js";
 import {Utils} from "./Utils.js";
 import {DataStoreItem, Filter} from "./DataStore.js";
+import {ServerConnectionUI} from "./ServerConnectionUI.js";
+
 // differ of DataStoreItem by UI features, serverConnection and field.$ref dependencies
 class CrudUiSkeleton extends DataStoreItem {
 
@@ -161,6 +164,23 @@ class CrudUiSkeleton extends DataStoreItem {
 	}
 
 	process(action, params) {
+		for (let [fieldName, property] of Object.entries(this.properties)) {
+			if (property.type == "object" && property.hiden != true) {
+				const list = OpenApi.getDependenciesSchemas(this.openapi, {properties: property.properties});
+
+				if (list.length == 1) {
+					// 	constructor(parent, properties, fieldNameExternal, title, serverConnection) {
+					this.listItemCrudJson.push(new CrudUiSkeleton.CrudItemJson(this, property.properties, fieldName, property.title, this.serverConnection));
+				} else {
+					// 	constructor(parent, properties, fieldNameExternal, title, serverConnection) {
+					this.listCrudObjJson.push(new CrudUiSkeleton.CrudObjJson(this, property.properties, fieldName, property.title, this.serverConnection));
+				}
+			} else if (property.type == "array" && property.hiden != true) {
+				// 	constructor(parent, properties, fieldNameExternal, title, serverConnection) {
+				this.listCrudJsonArray.push(new CrudUiSkeleton.CrudJsonArray(this, property.items.properties, fieldName, {"action": action}, this.serverConnection));
+			}
+		}
+
 		for (let [fieldName, field] of Object.entries(this.properties)) field.filter = {};
 		this.buildFieldFilterResults();
 		return super.process(action, params).then(res => {
@@ -168,18 +188,32 @@ class CrudUiSkeleton extends DataStoreItem {
 			return res;
 		});
 	}
-	
+	// fieldName, 'view', item, false
+    goToField(fieldName, action, obj) {
+//    	console.log(`[${this.constructor.name}.goToField(${fieldName}, ${action})]`);
+    	const field = this.properties[fieldName];
+		if (field.$ref == undefined) return "";
+		const item = OpenApi.getPrimaryKeyForeign(this.serverConnection.openapi, this, fieldName, obj, this.serverConnection.services);
+		const service = this.serverConnection.getSchema(item.table);
+		return ServerConnectionUI.buildLocationHash(service.path + "/" + action, {primaryKey: item.primaryKey});
+    }
+
 	setValues(obj, enableDefault) {
 		return super.setValues(obj, enableDefault, this.serverConnection).
 		then(() => {
 			// fieldFirst is used in form_body html template
 			this.fieldFirst = undefined;
 			const list = Object.entries(this.properties);
-			let filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true && field.required == true && this.instance[fieldName] == undefined);
+			let filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true && field.required == true && field.type != "object" && field.type != "array" && this.instance[fieldName] == undefined);
+			if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true && field.required == true && field.type != "object" && field.type != "array");
 			if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true && field.required == true);
 			if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true);
 			if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true);
 			if (filter.length > 0) this.fieldFirst = filter[0][0];
+			// TODO : transferir para classe pai ou primeiro ancestral com referência aos this.list*Crud
+			this.listItemCrudJson.forEach(item => item.get(this.instance));
+			this.listCrudObjJson.forEach(item => item.get(this.instance));
+			this.listCrudJsonArray.forEach(item => item.get(this.instance));
 		}).
 		then(() => {
 			this.serverConnection.$scope.$apply();
@@ -239,6 +273,7 @@ class CrudUiSkeleton extends DataStoreItem {
 
 				if (field.$ref != undefined) {
 					const foreignData = field.filterResults[pos];
+//					const foreignKey = OpenApi.getForeignKey(this.serverConnection.openapi, this, fieldName, foreignData, this.serverConnection.services);
 					const foreignKey = this.serverConnection.getForeignKey(this, fieldName, foreignData);
 					newValue = foreignKey[fieldName];
 				} else if (field.enum != undefined) {

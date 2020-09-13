@@ -4,32 +4,39 @@ import {CrudUiSkeleton} from "./CrudUiSkeleton.js";
 
 class CrudJsonArray extends CrudUiSkeleton {
 
-	constructor(parent, properties, fieldNameExternal, title, serverConnection, selectCallback) {
+	constructor(parent, properties, fieldNameExternal, options, serverConnection, selectCallback) {
 		super(serverConnection, fieldNameExternal, {"properties": properties}, selectCallback);
 		this.parent = parent;
 		this.fieldNameExternal = fieldNameExternal;
-		this.title = title;
+		this.title = options.title || parent.properties[fieldNameExternal].title || fieldNameExternal;
+		this.action = options.action || "edit";
+		this.convertString = parent.properties[fieldNameExternal].type == "string";
+		this.list = [];
 	}
 
 	get(parentInstance) {
-		var data = parentInstance[this.fieldNameExternal];
+		const data = parentInstance[this.fieldNameExternal];
+		this.list = [];
 
-		if (Array.isArray(data) == true) {
-			this.list = data;
-		} else if (typeof data === 'string' || data instanceof String) {
-			this.list = JSON.parse(data);
+		if (data != undefined) {
+			if (Array.isArray(data)) {
+				this.list = data;
+			} else if (typeof data === 'string' || data instanceof String) {
+				this.list = JSON.parse(data);
+			}
 		}
 		
 		return this.process();
 	}
 	// private, use in addItem, updateItem and removeItem
 	updateParent() {
-		if (this.parent.properties[this.fieldNameExternal].type == "string") {
+		if (this.convertString == true) {
 			this.parent.instance[this.fieldNameExternal] = JSON.stringify(this.list);
 		} else {
 			this.parent.instance[this.fieldNameExternal] = this.list;
 		}
 
+		if (this.action != "edit") return Promise.resolve();
 		return this.parent.update().then(() => this.serverConnection.$scope.$apply());
 	}
 
@@ -77,5 +84,7 @@ class CrudJsonArray extends CrudUiSkeleton {
 	}
 
 }
+
+CrudUiSkeleton.CrudJsonArray = CrudJsonArray;
 
 export {CrudJsonArray}

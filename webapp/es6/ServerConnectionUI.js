@@ -228,7 +228,7 @@ class ServerConnectionUI extends ServerConnection {
 					console.error("fail to parse json from string this.routes : ", this.routes, "err : ", e);
 				}
 			} else {
-				console.err("invalid routes");
+				console.error("invalid routes");
 			}
 
 			for (let route of routes) {
@@ -269,7 +269,7 @@ class ServerConnectionUI extends ServerConnection {
 		});
     }
     // public
-    login(server, path, user, password, RufsServiceClass, callbackPartial, dbUri) {
+    login(server, path, user, password, RufsServiceClass, callbackPartial) {
     	if (server == null || server.length == 0) {
     		server = window.location.origin;
     	}
@@ -278,7 +278,7 @@ class ServerConnectionUI extends ServerConnection {
     		path = window.location.pathname;
     	}
 
-        return super.login(server, path, user, password, RufsServiceClass, callbackPartial, dbUri).then(loginResponse => this.loginDone());
+        return super.login(server, path, user, password, RufsServiceClass, callbackPartial).then(loginResponse => this.loginDone());
     }
 
     logout() {

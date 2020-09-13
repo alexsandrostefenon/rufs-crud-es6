@@ -1,4 +1,4 @@
-<div ng-repeat="(fieldName,field) in vm.properties" ng-if='field.hiden != true && field.type != "array"'>
+<div ng-repeat="(fieldName,field) in vm.properties" ng-if='field.type != "object" && field.type != "array" && field.hiden != true && field.type != "array"'>
 	<div class="form-group row">
 	    <label for="{{fieldName}}" class="col-xs-4 col-form-label">{{vm.serverConnection.convertCaseAnyToLabel(field.label)}}</label>
 

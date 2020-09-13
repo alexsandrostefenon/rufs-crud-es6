@@ -9,6 +9,7 @@ class CrudItemJson extends CrudUiSkeleton {
 		let _fields = {};
 		_fields._name = {};
 		_fields._name.type = "string";
+		_fields._name.sortType = "asc";
 		
 		if (nameOptions != undefined) {
 			_fields._name.enum = nameOptions;
@@ -139,5 +140,7 @@ class CrudItemJson extends CrudUiSkeleton {
 	}
 
 }
+
+CrudUiSkeleton.CrudItemJson = CrudItemJson;
 
 export {CrudItemJson}

@@ -11,4 +11,8 @@
     </div>
 </form>
 
+<crud-item-json ng-repeat="item in vm.listItemCrudJson" vm="item" edit="true"></crud-item-json>
+<crud-obj-json ng-repeat="item in vm.listCrudObjJson" vm="item" edit="true"></crud-obj-json>
+<crud-json-array ng-repeat="item in vm.listCrudJsonArray" vm="item" edit="true"></crud-json-array>
+
 <crud-obj-json ng-repeat="item in vm.listCrudObjJsonResponse" vm="item" edit="false"></crud-obj-json>

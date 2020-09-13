@@ -15,4 +15,6 @@
 	<div ng-include="'./templates/crud-model_form_body_view.html'"></div>
 </form>
 
+<crud-item-json ng-repeat="item in vm.listItemCrudJson" vm="item" edit="edit"></crud-item-json>
+<crud-obj-json ng-repeat="item in vm.listCrudObjJson" vm="item" edit="edit"></crud-obj-json>
 <crud-json-array ng-repeat="item in vm.listCrudJsonArray" vm="item" edit="edit"></crud-json-array>
