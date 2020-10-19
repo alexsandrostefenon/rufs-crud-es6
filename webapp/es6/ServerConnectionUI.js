@@ -269,7 +269,7 @@ class ServerConnectionUI extends ServerConnection {
 		});
     }
     // public
-    login(server, path, user, password, RufsServiceClass, callbackPartial) {
+    login(server, path, loginPath, user, password, RufsServiceClass, callbackPartial) {
     	if (server == null || server.length == 0) {
     		server = window.location.origin;
     	}
@@ -278,7 +278,13 @@ class ServerConnectionUI extends ServerConnection {
     		path = window.location.pathname;
     	}
 
-        return super.login(server, path, user, password, RufsServiceClass, callbackPartial).then(loginResponse => this.loginDone());
+    	if (loginPath == null || loginPath.length == 0) {
+    		loginPath = window.location.pathname;
+    		if (loginPath.endsWith("/") == false) loginPath = loginPath + "/";
+    		loginPath = loginPath + "rest/login";
+    	}
+
+        return super.login(server, path, loginPath, user, password, RufsServiceClass, callbackPartial).then(loginResponse => this.loginDone());
     }
 
     logout() {

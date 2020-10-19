@@ -10,8 +10,13 @@ class RufsServiceController extends CrudController {
     constructor(serverConnection, $scope) {
     	super(serverConnection, $scope);
     	this.rufsService.label = "Open Api / Swagger";
-    	this.properties.parameter.orderIndex = 1;
-    	this.properties.parameter.sortType = "desc";
+		this.properties.operationId.orderIndex = 1;
+		this.properties.operationId.sortType = "asc";
+		this.properties.path.orderIndex = 2;
+		this.properties.path.sortType = "asc";
+		this.properties.method.orderIndex = 3;
+		this.properties.method.sortType = "asc";
+		this.properties.parameter.orderIndex = 4;
 //		const defaultValues = {type: "s", updatable: true, maxLength: 255, precision: 9, scale: 3, hiden: false, primaryKey: false, required: false};
     	const schemaProperties = {
     			"hiden":{"type": "boolean", "orderIndex": 1, "sortType": "desc"},

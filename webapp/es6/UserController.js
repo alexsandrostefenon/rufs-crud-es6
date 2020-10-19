@@ -43,7 +43,8 @@ class UserController extends CrudController {
     			"controller":{"default":"CrudController"},
     			};
     	// fields, instanceExternal, fieldNameExternal, title, serverConnection, selectCallback
-    	this.listCrudJsonArray.push(new CrudJsonArray(this, fieldsRoute, "routes", {"title": "Rotas de URL AngularJs"}, this.serverConnection));
+		// 	constructor(parent, fieldNameExternal, schema, options, serverConnection) {
+    	this.listCrudJsonArray.push(new CrudJsonArray(this, "routes", {"properties": fieldsRoute}, {"title": "Rotas de URL AngularJs"}, this.serverConnection));
     }
 
 	save() {
@@ -77,7 +78,7 @@ routes : '[{"path":"/app/request/:action","controller":"RequestController"}]'
 
                 for (let dependency of listDependencies) {
                     if (newRoles[dependency] == undefined) {
-                        newRoles[dependency] = {};
+                        newRoles[dependency] = {"get": true, "post": false, "patch": false, "put": false, "delete": false};// {}
                     }
                 }
 

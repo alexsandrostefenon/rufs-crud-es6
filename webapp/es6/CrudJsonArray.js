@@ -1,16 +1,24 @@
+import {OpenApi} from "./OpenApi.js";
 import {Filter} from "./DataStore.js";
 import {ServerConnection} from "./ServerConnection.js";
 import {CrudUiSkeleton} from "./CrudUiSkeleton.js";
 
 class CrudJsonArray extends CrudUiSkeleton {
 
-	constructor(parent, properties, fieldNameExternal, options, serverConnection, selectCallback) {
-		super(serverConnection, fieldNameExternal, {"properties": properties}, selectCallback);
+	constructor(parent, fieldNameExternal, schema, options, serverConnection, selectCallback) {
+		const field = parent.properties[fieldNameExternal];
+
+		if ((schema.primaryKeys == undefined || schema.primaryKeys.length == 0) && field.$ref != undefined) {
+			const schemaRef = OpenApi.getSchemaFromSchemas(serverConnection.openapi, field.$ref);
+			if (schemaRef != undefined) schema.primaryKeys = schemaRef.primaryKeys;
+		}
+
+		super(serverConnection, fieldNameExternal, schema, selectCallback);
 		this.parent = parent;
 		this.fieldNameExternal = fieldNameExternal;
-		this.title = options.title || parent.properties[fieldNameExternal].title || fieldNameExternal;
+		this.title = options.title || field.title || fieldNameExternal;
 		this.action = options.action || "edit";
-		this.convertString = parent.properties[fieldNameExternal].type == "string";
+		this.convertString = field.type == "string";
 		this.list = [];
 	}
 
@@ -36,16 +44,21 @@ class CrudJsonArray extends CrudUiSkeleton {
 			this.parent.instance[this.fieldNameExternal] = this.list;
 		}
 
-		if (this.action != "edit") return Promise.resolve();
+		if (this.action != "edit") return this.paginate();
 		return this.parent.update().then(() => this.serverConnection.$scope.$apply());
 	}
 
 	save() {
 		// já verifica se é um item novo ou um update
-		const primaryKey = this.getPrimaryKey(this.instance);
+		const obj = OpenApi.copyFields(this, this.instance);
+		const primaryKey = this.getPrimaryKey(obj);
 
-		if (Filter.findOne(this.list, primaryKey, index => this.list[index] = this.instance) == null) {
-			this.list.push(this.instance);
+		if (primaryKey != undefined && Object.keys(primaryKey).length > 0) {
+			if (Filter.findOne(this.list, primaryKey, index => this.list[index] = obj) == null) {
+				this.list.push(obj);
+			}
+		} else {
+			this.list.push(obj);
 		}
 
 		return this.updateParent();
@@ -81,6 +94,16 @@ class CrudJsonArray extends CrudUiSkeleton {
 		}
 
 		return this.updateParent();
+	}
+
+	buildFieldStr(fieldName, item) {
+		let ret = super.buildFieldStr(fieldName, item);
+
+		if (ret == "") {
+			ret = super.buildFieldStr(fieldName, item);
+		}
+
+		return ret;
 	}
 
 }

@@ -176,8 +176,8 @@ class CrudUiSkeleton extends DataStoreItem {
 					this.listCrudObjJson.push(new CrudUiSkeleton.CrudObjJson(this, property.properties, fieldName, property.title, this.serverConnection));
 				}
 			} else if (property.type == "array" && property.hiden != true) {
-				// 	constructor(parent, properties, fieldNameExternal, title, serverConnection) {
-				this.listCrudJsonArray.push(new CrudUiSkeleton.CrudJsonArray(this, property.items.properties, fieldName, {"action": action}, this.serverConnection));
+				// 	constructor(parent, fieldNameExternal, schema, options, serverConnection) {
+				this.listCrudJsonArray.push(new CrudUiSkeleton.CrudJsonArray(this, fieldName, property.items, {"action": action}, this.serverConnection));
 			}
 		}
 
@@ -234,7 +234,7 @@ class CrudUiSkeleton extends DataStoreItem {
      		if (index >= list.length) return Promise.resolve();
      		const item = list[index];
      		console.log(`[${this.constructor.name}.setPage(${this.name})] : updating references to register ${index}`, service.getPrimaryKey(item));
-     		return this.serverConnection.getDocument(this.name, item, false).then(() => next(service, list, ++index));
+     		return this.serverConnection.getDocument(service, item, false).then(() => next(service, list, ++index));
      	}
 
 		const service = this.serverConnection.getSchema(this.name);
