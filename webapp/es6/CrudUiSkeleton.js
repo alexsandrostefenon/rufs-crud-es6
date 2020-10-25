@@ -101,66 +101,91 @@ class CrudUiSkeleton extends DataStoreItem {
 		this.listCrudJsonArray = [];
 		this.listCrudObjJsonResponse = [];
 		this.updateFields();
+//		this.title = "loading...";
 	}
 
 	buildFieldFilterResults() {
-		// faz uma referencia local a field.filterResultsStr, para permitir opção filtrada, sem alterar a referencia global
-		for (let [fieldName, field] of Object.entries(this.properties)) {
+		const updateReferenceList = fieldName => {
+			const field = this.properties[fieldName];
+			let promise = Promise.resolve();
+
 			if (field.$ref != undefined) {
-				const rufsService = this.serverConnection.getForeignService(this, fieldName);
+				const service = this.serverConnection.getSchema(field.$ref);
 
-				if (rufsService != undefined) {
-					let fieldFilter = Object.entries(field.filter);
+				if (service != undefined) {
+					promise = this.serverConnection.getDocuments(service, service.list);
+				}
+			}
 
-					if (fieldFilter.length > 0) {
-						field.filterResults = [];
-						field.filterResultsStr = [];
-						
-						for (let i = 0; i < rufsService.list.length; i++) {
-							let candidate = rufsService.list[i];
+			return promise;
+		}
 
-							if (Filter.matchObject(field.filter, candidate, (a,b,fieldName) => a == b, false)) {
-								field.filterResults.push(candidate);
-								const str = rufsService.listStr[i];
+		const next = (propertyNames, index) => {
+			if (index >= propertyNames.length) return Promise.resolve();
+			const fieldName = propertyNames[index];
+			return updateReferenceList(fieldName).then(() => next(propertyNames, ++index));
+		}
 
-								if (field.filterResultsStr.indexOf(str) < 0)
-									field.filterResultsStr.push(str);
-								else
-									console.error(`[${this.constructor.name}.buildFieldFilterResults(${this.name})] : already exists string in filterResultsStr :`, str);
+		return next(Object.keys(this.properties), 0).
+		then(() => {
+			// faz uma referencia local a field.filterResultsStr, para permitir opção filtrada, sem alterar a referencia global
+			for (let [fieldName, field] of Object.entries(this.properties)) {
+				if (field.$ref != undefined) {
+					const rufsService = this.serverConnection.getForeignService(this, fieldName);
+
+					if (rufsService != undefined) {
+						let fieldFilter = Object.entries(field.filter);
+
+						if (fieldFilter.length > 0) {
+							field.filterResults = [];
+							field.filterResultsStr = [];
+
+							for (let i = 0; i < rufsService.list.length; i++) {
+								let candidate = rufsService.list[i];
+
+								if (Filter.matchObject(field.filter, candidate, (a,b,fieldName) => a == b, false)) {
+									field.filterResults.push(candidate);
+									const str = rufsService.listStr[i];
+
+									if (field.filterResultsStr.indexOf(str) < 0)
+										field.filterResultsStr.push(str);
+									else
+										console.error(`[${this.constructor.name}.buildFieldFilterResults(${this.name})] : already exists string in filterResultsStr :`, str);
+								}
 							}
+						} else {
+							field.filterResults = rufsService.list;
+							field.filterResultsStr = rufsService.listStr;
 						}
 					} else {
-						field.filterResults = rufsService.list;
-						field.filterResultsStr = rufsService.listStr;
+						console.warn("don't have acess to service ", field.$ref);
+						field.filterResults = [];
+						field.filterResultsStr = [];
 					}
-				} else {
-					console.warn("don't have acess to service ", field.$ref);
-					field.filterResults = [];
-					field.filterResultsStr = [];
+				} else if (field.enum != undefined) {
+					field.filterResults = field.enum;
+
+					if (field.enumLabels != undefined) {
+						field.filterResultsStr = field.enumLabels;
+					} else {
+						field.filterResultsStr = field.enum;
+					}
 				}
-			} else if (field.enum != undefined) {
-				field.filterResults = field.enum;
-				
-				if (field.enumLabels != undefined) {
-					field.filterResultsStr = field.enumLabels;
-				} else {
-					field.filterResultsStr = field.enum;
+
+				if (field.htmlType.includes("date")) {
+					field.filterRangeOptions = [
+						" hora corrente ", " hora anterior ", " uma hora ",
+						" dia corrente ", " dia anterior ", " um dia ",
+						" semana corrente ", " semana anterior ", " uma semana ", 
+						" quinzena corrente ", " quinzena anterior ", " uma quinzena ",
+						" mês corrente ", " mês anterior ", " um mês ",
+						" ano corrente ", " ano anterior ", " um ano "
+					];
+
+					field.aggregateRangeOptions = ["", "hora", "dia", "mês", "ano"];
 				}
 			}
-			
-			if (field.htmlType.includes("date")) {
-				field.filterRangeOptions = [
-					" hora corrente ", " hora anterior ", " uma hora ",
-					" dia corrente ", " dia anterior ", " um dia ",
-					" semana corrente ", " semana anterior ", " uma semana ", 
-					" quinzena corrente ", " quinzena anterior ", " uma quinzena ",
-					" mês corrente ", " mês anterior ", " um mês ",
-					" ano corrente ", " ano anterior ", " um ano "
-				];
-				
-				field.aggregateRangeOptions = ["", "hora", "dia", "mês", "ano"];
-			}
-		}
+		});
 	}
 
 	process(action, params) {
@@ -182,10 +207,11 @@ class CrudUiSkeleton extends DataStoreItem {
 		}
 
 		for (let [fieldName, field] of Object.entries(this.properties)) field.filter = {};
-		this.buildFieldFilterResults();
 		return super.process(action, params).then(res => {
-			this.serverConnection.$scope.$apply();
-			return res;
+			return this.buildFieldFilterResults().then(() => {
+				this.serverConnection.$scope.$apply();
+				return res;
+			});
 		});
 	}
 	// fieldName, 'view', item, false
@@ -229,22 +255,11 @@ class CrudUiSkeleton extends DataStoreItem {
 
     setPage(page) {
     	this.pagination.setPage(page);
-
-     	const next = (service, list, index) => {
-     		if (index >= list.length) return Promise.resolve();
-     		const item = list[index];
-     		console.log(`[${this.constructor.name}.setPage(${this.name})] : updating references to register ${index}`, service.getPrimaryKey(item));
-     		return this.serverConnection.getDocument(service, item, false).then(() => next(service, list, ++index));
-     	}
-
 		const service = this.serverConnection.getSchema(this.name);
 		let promise;
 
     	if (service != undefined) {
-			promise = next(service, this.pagination.listPage, 0).
-			then(() => {
-				this.serverConnection.$scope.$apply();
-			});
+			promise = this.serverConnection.getDocuments(service, this.pagination.listPage);
     	} else {
     		promise = Promise.resolve();
     	}

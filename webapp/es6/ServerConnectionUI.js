@@ -13,7 +13,11 @@ class CrudServiceUI extends RufsService {
     buildItemStr(item) {
 		let stringBuffer = [];
 		let str = "";
-		for (let fieldName of this.shortDescriptionList) this.buildField(stringBuffer, fieldName, item);
+
+		for (let fieldName of this.shortDescriptionList) {
+			this.buildField(stringBuffer, fieldName, item);
+		}
+
 		if (stringBuffer.length > 0) str = stringBuffer.join(" - ");
 		return str;
     }
@@ -23,8 +27,17 @@ class CrudServiceUI extends RufsService {
     	var ret = [];
 
     	for (var i = 0; i < list.length; i++) {
-    		var item = list[i];
-    		var str = this.buildItemStr(item);
+    		const item = list[i];
+    		const str = this.buildItemStr(item);
+			const pos = ret.indexOf(str);
+
+			if (pos >= 0) {
+//				console.error(`[${this.constructor.name}.buildListStr(${this.name})] : already exists string in list : oldPos = ${pos}, newPos = ${i}, str = ${str})`, list[pos], list[i]);
+//				console.trace();
+//				debugger;
+				this.buildItemStr(item);
+			}
+
     		ret.push(str);
     	}
 
@@ -41,11 +54,10 @@ class CrudServiceUI extends RufsService {
 		const assertExists = (list, str, action, params) => {
 			const pos = list.indexOf(str);
 
-			if (pos >= 0) {
+			if (pos >= 0 && pos != params.newPos) {
 				console.error(`[${this.constructor.name}.updateListStr(${this.name}, ${action})] : already exists string in listStr : list.length = ${list.length}, pos = ${pos}, oldPos = ${params.oldPos}, newPos = ${params.newPos}, str = ${str})`);
 				console.trace();
 				debugger;
-
 			}
 		}
 
@@ -58,11 +70,12 @@ class CrudServiceUI extends RufsService {
         } else if (params.newPos == undefined) {
         	// remove
         	this.listStr.splice(params.oldPos, 1);
-			console.log(`[${this.constructor.name}.updateListStr(${this.name}, ${params.oldPos}, ${params.newPos})] remove :`, str);
+//			console.log(`[${this.constructor.name}.updateListStr(${this.name}, ${params.oldPos}, ${params.newPos})] remove :`, str);
         } else if (params.newPos == params.oldPos) {
         	// replace
+        	assertExists(this.listStr, str, "replace", params);
         	this.listStr[params.newPos] = str;
-			console.log(`[${this.constructor.name}.updateListStr(${this.name}, ${params.oldPos}, ${params.newPos})] replace :`, str);
+//			console.log(`[${this.constructor.name}.updateListStr(${this.name}, ${params.oldPos}, ${params.newPos})] replace :`, str);
         } else if (params.newPos != undefined) {
         	// remove and add
         	this.listStr.splice(params.oldPos, 1);
@@ -181,6 +194,27 @@ class ServerConnectionUI extends ServerConnection {
 			return service.updateListStr(response);
 		});
 	}
+
+	getDocument(service, obj, merge, tokenData) {
+		return super.getDocument(service, obj, merge, tokenData).then(() => {
+			if (service.primaryKeys.length > 0) {
+				const primaryKey = service.getPrimaryKey(obj);
+
+				if (primaryKey != null) {
+					const pos = service.findPos(primaryKey);
+
+					if (pos >= 0) {
+						if (service.updateListStr != undefined) {
+							service.updateListStr({data: obj, oldPos: pos, newPos: pos});
+						} else {
+							console.error(`[${this.constructor.name}.getDocument()] : missing updateListStr`);
+						}
+					}
+				}
+			}
+		});
+	}
+
     // private <- login
 	loginDone() {
         this.menu = {user:[{path:"login", label:"Exit"}]};

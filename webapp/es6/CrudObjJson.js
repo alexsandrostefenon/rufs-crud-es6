@@ -21,8 +21,10 @@ class CrudObjJson extends CrudUiSkeleton {
 				this.instance[fieldName] = obj[fieldName];
 			}
 		}
+	}
 
-		this.buildFieldFilterResults();
+	process(action, params) {
+		return this.buildFieldFilterResults().then(() => super.process(action, params));
 	}
 
 	save() {

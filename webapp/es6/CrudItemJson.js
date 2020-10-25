@@ -22,7 +22,10 @@ class CrudItemJson extends CrudUiSkeleton {
 		this.fieldNameExternal = fieldNameExternal;
 		this.title = title;
 		this.nameOptions = nameOptions;
-		this.buildFieldFilterResults();
+	}
+
+	process(action, params) {
+		return this.buildFieldFilterResults().then(() => super.process(action, params));
 	}
 
 	get(parentInstance) {
@@ -46,16 +49,21 @@ class CrudItemJson extends CrudUiSkeleton {
 			}
 		}
 		
-		this.restrictNameOptions();
-		return this.process();
+		return this.restrictNameOptions().then(() => this.process());
 	}
 
 	restrictNameOptions() {
+		let promise;
+
 		if (this.nameOptions != undefined) {
 			this.properties._name.enum = [];
 			for (let name of this.nameOptions) if (this.list.find(item => item._name == name) == undefined) this.properties._name.enum.push(name);
-			this.buildFieldFilterResults();
+			promise = this.buildFieldFilterResults();
+		} else {
+			promise = Promise.resolve();
 		}
+
+		return promise;
 	}
 	// private, use in addItem, updateItem and removeItem
 	updateParent() {
@@ -68,9 +76,10 @@ class CrudItemJson extends CrudUiSkeleton {
 		}
 
 		this.parent.instance[this.fieldNameExternal] = JSON.stringify(objItems);
-		this.restrictNameOptions();
-		this.parent.rufsService.params.saveAndExit = false;
-		return this.parent.update().then(res => this.get(res.data));
+		return this.restrictNameOptions().then(() => {
+			this.parent.rufsService.params.saveAndExit = false;
+			return this.parent.update().then(res => this.get(res.data));
+		});
 	}
 
 	save() {
@@ -105,13 +114,14 @@ class CrudItemJson extends CrudUiSkeleton {
 		return this.clear().then(() => {
 			const index = Filter.findPos(this.list, {"_name": name});
 			var item = this.list[index];
+			let promise = Promise.resolve();
 
 			if (this.nameOptions != undefined) {
 				this.properties._name.enum.push(item._name);
-				this.buildFieldFilterResults();
+				promise = this.buildFieldFilterResults();
 			}
 
-			return this.setValues(item, false);
+			return promise.then(() => this.setValues(item, false));
 		});
 	}
 

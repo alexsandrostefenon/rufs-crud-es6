@@ -14,27 +14,34 @@ class CrudCommom extends CrudUiSkeleton {
 	}
 
 	process(action, params) {
-		if (action == "new") {
-			if (this.activeSchemaType != "requestBody") {
-				const schema = OpenApi.getSchemaFromRequestBodies(this.serverConnection.openapi, this.rufsService.name);
+		return Promise.resolve().
+		then(() => {
+		}).
+		then(() => {
+			if (action == "new") {
+				if (this.activeSchemaType != "requestBody") {
+					const schema = OpenApi.getSchemaFromRequestBodies(this.serverConnection.openapi, this.rufsService.name);
+
+					if (schema != undefined) {
+						this.setSchema(schema);
+						this.activeSchemaType = "requestBody";
+						this.updateFields();
+					}
+				}
+			} else if (this.activeSchemaType != "schema") {
+				const schema = OpenApi.getSchemaFromSchemas(this.serverConnection.openapi, this.rufsService.name);
 
 				if (schema != undefined) {
 					this.setSchema(schema);
-					this.activeSchemaType = "requestBody";
+					this.activeSchemaType = "schema";
 					this.updateFields();
 				}
 			}
-		} else if (this.activeSchemaType != "schema") {
-			const schema = OpenApi.getSchemaFromSchemas(this.serverConnection.openapi, this.rufsService.name);
-
-			if (schema != undefined) {
-				this.setSchema(schema);
-				this.activeSchemaType = "schema";
-				this.updateFields();
-			}
-		}
-
-		return super.process(action, params).then(() => {
+		}).
+		then(() => {
+			return super.process(action, params);
+		}).
+		then(() => {
 			let promise = undefined;
 
 			if (action == "search") {
@@ -78,6 +85,7 @@ class CrudCommom extends CrudUiSkeleton {
 
 			return promise;
 		}).then(res => {
+//			this.title = this.rufsService.label;
 			this.serverConnection.$scope.$apply();
 			return res;
 		})
