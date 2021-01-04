@@ -1,4 +1,4 @@
-<div ng-repeat="(fieldName,field) in vm.properties" ng-if='(field.type != "object" && field.type != "array" && field.hiden != true && vm.instance[vm.fieldFirst] != undefined) || fieldName == vm.fieldFirst'>
+<div ng-repeat="(fieldName,field) in vm.properties" ng-if='(field.type != "object" && field.type != "array" && field.hiden != true && (vm.fieldFirst == undefined || vm.instance[vm.fieldFirst] != undefined)) || fieldName == vm.fieldFirst'>
 	<div class="form-group row" ng-class="{'has-error': {{vm.formId}}.{{fieldName}}.$invalid}">
 	    <label for="{{fieldName}}" class="col-xs-4 col-form-label">{{vm.serverConnection.convertCaseAnyToLabel(field.label)}}</label>
 

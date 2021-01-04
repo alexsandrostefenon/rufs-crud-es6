@@ -20,7 +20,7 @@ class CrudItemJson extends CrudUiSkeleton {
 		this.primaryKeys = ["_name"];
 		this.parent = parent;
 		this.fieldNameExternal = fieldNameExternal;
-		this.title = title;
+		this.title = title || this.parent.properties[this.fieldNameExternal].title || this.serverConnection.convertCaseAnyToLabel(this.fieldNameExternal);
 		this.nameOptions = nameOptions;
 	}
 
@@ -29,24 +29,22 @@ class CrudItemJson extends CrudUiSkeleton {
 	}
 
 	get(parentInstance) {
-		var objItemsStr = parentInstance[this.fieldNameExternal];
+		const data = parentInstance[this.fieldNameExternal] || {};
+		const obj = typeof(data) == "string" ? JSON.parse(data) : data;
+//		return this.setValues(obj, false);
+		this.list = [];
 
-		if (objItemsStr != undefined && objItemsStr.length > 0) {
-			var objItems = JSON.parse(objItemsStr);
-			this.list = [];
+		for (var itemName in obj) {
+			var objItem = obj[itemName];
+			var item = {};
 
-			for (var itemName in objItems) {
-				var objItem = objItems[itemName];
-				var item = {};
-
-				for (var fieldName in this.properties) {
-					var field = this.properties[fieldName];
-					item[fieldName] = objItem[fieldName];
-				}
-
-				item._name = itemName;
-				this.list.push(item);
+			for (var fieldName in this.properties) {
+				var field = this.properties[fieldName];
+				item[fieldName] = objItem[fieldName];
 			}
+
+			item._name = itemName;
+			this.list.push(item);
 		}
 		
 		return this.restrictNameOptions().then(() => this.process());

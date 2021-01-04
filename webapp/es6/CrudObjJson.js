@@ -7,19 +7,11 @@ class CrudObjJson extends CrudUiSkeleton {
 		super(serverConnection, fieldNameExternal, {"properties": properties}, selectCallback);
 		this.parent = parent;
 		this.fieldNameExternal = fieldNameExternal;
-		this.title = title;
+		this.title = title || this.parent.properties[this.fieldNameExternal].title || this.serverConnection.convertCaseAnyToLabel(this.fieldNameExternal);
 
 		for (var fieldName in this.properties) {
 			var field = this.properties[fieldName];
 			field._label = serverConnection.convertCaseAnyToLabel(fieldName);
-		}
-
-		if (this.fieldNameExternal != undefined && this.fieldNameExternal != null && this.fieldNameExternal.length > 0) {
-			var obj = JSON.parse(this.instanceExternal[this.fieldNameExternal]);
-
-			for (var fieldName in obj) {
-				this.instance[fieldName] = obj[fieldName];
-			}
 		}
 	}
 
@@ -27,18 +19,22 @@ class CrudObjJson extends CrudUiSkeleton {
 		return this.buildFieldFilterResults().then(() => super.process(action, params));
 	}
 
-	save() {
-		if (this.fieldNameExternal != undefined && this.fieldNameExternal != null && this.fieldNameExternal.length > 0) {
-			this.instanceExternal[this.fieldNameExternal] = JSON.stringify(this.instance);
-		}
-	}
-
-	get(data) {
+	get(parentInstance) {
 		return this.process().
 		then(() => {
-			for (let crudJsonArray of this.listCrudJsonArray) crudJsonArray.get(data);
-			return this.setValues(data, false);
+			const data = parentInstance[this.fieldNameExternal] || {};
+			const obj = typeof(data) == "string" ? JSON.parse(data) : data;
+			return this.setValues(obj, false);
 		});
+	}
+
+	save() {
+		if (this.fieldNameExternal != undefined && this.fieldNameExternal != null && this.fieldNameExternal.length > 0) {
+			if (this.parent.properties[this.fieldNameExternal].type == "string")
+				this.parent.instance[this.fieldNameExternal] = JSON.stringify(this.instance);
+			else
+				this.parent.instance[this.fieldNameExternal] = this.instance;
+		}
 	}
 
 }

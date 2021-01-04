@@ -1,6 +1,5 @@
 import {CrudController} from "./CrudController.js";
 import {CrudItemJson} from "./CrudItemJson.js";
-import {CrudObjJson} from "./CrudObjJson.js";
 import {CrudJsonArray} from "./CrudJsonArray.js";
 import {CaseConvert} from "./CaseConvert.js";
 import {HttpRestRequest} from "./ServerConnection.js";

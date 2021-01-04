@@ -1,6 +1,5 @@
 import {CrudController} from "./CrudController.js";
 import {CrudItemJson} from "./CrudItemJson.js";
-import {CrudObjJson} from "./CrudObjJson.js";
 import {CrudJsonArray} from "./CrudJsonArray.js";
 import {CaseConvert} from "./CaseConvert.js";
 import {HttpRestRequest} from "./ServerConnection.js";
@@ -9,7 +8,7 @@ class RufsServiceController extends CrudController {
 
     constructor(serverConnection, $scope) {
     	super(serverConnection, $scope);
-    	this.rufsService.label = "Open Api / Swagger";
+    	this.rufsService.label = "OpenApi/Swagger Operations";
 		this.properties.operationId.orderIndex = 1;
 		this.properties.operationId.sortType = "asc";
 		this.properties.path.orderIndex = 2;

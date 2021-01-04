@@ -16,7 +16,7 @@ class CrudJsonArray extends CrudUiSkeleton {
 		super(serverConnection, fieldNameExternal, schema, selectCallback);
 		this.parent = parent;
 		this.fieldNameExternal = fieldNameExternal;
-		this.title = options.title || field.title || fieldNameExternal;
+		this.title = options.title || field.title || this.serverConnection.convertCaseAnyToLabel(this.fieldNameExternal);
 		this.action = options.action || "edit";
 		this.convertString = field.type == "string";
 		this.list = [];

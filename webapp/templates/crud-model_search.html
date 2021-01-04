@@ -10,7 +10,7 @@
 	<canvas id="aggregate-chart"></canvas>
 </div>
 
-<div class="panel panel-default" ng-if="vm.rufsService.list.length > 0">
+<div class="panel panel-default" ng-if="vm.rufsService.list.length > 0 || vm.rufsService.access.get == true">
 	<div class="panel-heading" role="tab">
 		<ul class="nav nav-tabs">
 			<li ng-class="{active: vm.activeTab == 1}"><a id="btn-collapse-form-filter"    ng-click="vm.activeTab = vm.activeTab == 1 ? 0 : 1">Filtro</a></li>
@@ -21,8 +21,6 @@
 
 	<div ng-show="vm.activeTab == 1" class="panel-body">
 		<form id="{{vm.formId}}" name="{{vm.formId}}" class="form-horizontal" role="form">
-			<div ng-include="'./templates/crud-model_form_body_filter.html'"></div>
-
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
 					<button id="{{vm.formId}}-filter" name="filter" class="btn btn-primary" ng-click="vm.clickFilter()"><span class="glyphicon glyphicon-search"></span> {{vm.translation.filter}}</button>
@@ -30,13 +28,13 @@
 					<button id="{{vm.formId}}-exit" name="exit" class="btn btn-default" ng-click="vm.activeTab = 0"><span class="glyphicon glyphicon-remove"></span> {{vm.translation.exit}}</button>
 				</div>
 			</div>
+
+			<div ng-include="'./templates/crud-model_form_body_filter.html'"></div>
 		</form>
 	</div>
 
 	<div ng-show="vm.activeTab == 2" class="panel-body">
 		<form id="{{vm.formId}}-aggregate" name="{{vm.formId}}-aggregate" class="form-horizontal" role="form">
-			<div ng-include="'./templates/crud-model_form_body_aggregate.html'"></div>
-
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
 					<button id="{{vm.formId}}-aggregate-apply" name="aggregate" class="btn btn-primary" ng-click="vm.applyAggregate()"><span class="glyphicon glyphicon-search"></span> Gerar Relatório</button>
@@ -44,13 +42,13 @@
 					<button id="{{vm.formId}}-aggregate-exit" name="exit" class="btn btn-default" ng-click="vm.activeTab = 0"><span class="glyphicon glyphicon-exit"></span> {{vm.translation.exit}}</button>
 				</div>
 			</div>
+
+			<div ng-include="'./templates/crud-model_form_body_aggregate.html'"></div>
 		</form>
 	</div>
 
 	<div ng-show="vm.activeTab == 3" class="panel-body">
 		<form id="{{vm.formId}}-sort" name="{{vm.formId}}-sort" class="form-horizontal" role="form">
-			<div ng-include="'./templates/crud-model_form_body_sort.html'"></div>
-
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
 					<button id="{{vm.formId}}-sort-apply" name="sort" class="btn btn-primary" ng-click="vm.applySort()"><span class="glyphicon glyphicon-search"></span> Ordenar Tabela</button>
@@ -58,6 +56,8 @@
 					<button id="{{vm.formId}}-sort-exit" name="exit" class="btn btn-default" ng-click="vm.activeTab = 0"><span class="glyphicon glyphicon-exit"></span> {{vm.translation.exit}}</button>
 				</div>
 			</div>
+
+			<div ng-include="'./templates/crud-model_form_body_sort.html'"></div>
 		</form>
 	</div>
 </div>

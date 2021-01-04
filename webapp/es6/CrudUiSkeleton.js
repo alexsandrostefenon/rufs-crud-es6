@@ -90,7 +90,7 @@ class CrudUiSkeleton extends DataStoreItem {
 	}
 
 	constructor(serverConnection, name, schema, selectCallback) {
-		super(name, schema);
+		super(name, schema, [], serverConnection);
 		this.serverConnection = serverConnection;
 		this.translation = serverConnection.translation;
 		this.formId = name + "Form";
@@ -190,7 +190,9 @@ class CrudUiSkeleton extends DataStoreItem {
 
 	process(action, params) {
 		for (let [fieldName, property] of Object.entries(this.properties)) {
-			if (property.type == "object" && property.hiden != true) {
+			if (property.type == "object" && property.properties != undefined && property.hiden != true) {
+				if (this.listItemCrudJson.find(crudUi => crudUi.name == fieldName) != undefined) continue;
+				if (this.listCrudObjJson.find(crudUi => crudUi.name == fieldName) != undefined) continue;
 				const list = OpenApi.getDependenciesSchemas(this.openapi, {properties: property.properties});
 
 				if (list.length == 1) {
@@ -200,7 +202,7 @@ class CrudUiSkeleton extends DataStoreItem {
 					// 	constructor(parent, properties, fieldNameExternal, title, serverConnection) {
 					this.listCrudObjJson.push(new CrudUiSkeleton.CrudObjJson(this, property.properties, fieldName, property.title, this.serverConnection));
 				}
-			} else if (property.type == "array" && property.hiden != true) {
+			} else if (property.type == "array" && property.items != undefined && property.hiden != true) {
 				// 	constructor(parent, fieldNameExternal, schema, options, serverConnection) {
 				this.listCrudJsonArray.push(new CrudUiSkeleton.CrudJsonArray(this, fieldName, property.items, {"action": action}, this.serverConnection));
 			}
@@ -225,7 +227,7 @@ class CrudUiSkeleton extends DataStoreItem {
     }
 
 	setValues(obj, enableDefault) {
-		return super.setValues(obj, enableDefault, this.serverConnection).
+		return super.setValues(obj, enableDefault).
 		then(() => {
 			// fieldFirst is used in form_body html template
 			this.fieldFirst = undefined;
@@ -235,11 +237,19 @@ class CrudUiSkeleton extends DataStoreItem {
 			if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true && field.required == true);
 			if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true);
 			if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true);
-			if (filter.length > 0) this.fieldFirst = filter[0][0];
+//			if (filter.length > 0) this.fieldFirst = filter[0][0];
 			// TODO : transferir para classe pai ou primeiro ancestral com referência aos this.list*Crud
-			this.listItemCrudJson.forEach(item => item.get(this.instance));
-			this.listCrudObjJson.forEach(item => item.get(this.instance));
-			this.listCrudJsonArray.forEach(item => item.get(this.instance));
+			const next = list => {
+				if (list.length == 0) return obj;
+				const crudXXX = list.shift();
+				return crudXXX.get(this.instance).then(() => next(list));
+			};
+
+			const listCrud = [];
+			Array.prototype.push.apply(listCrud, this.listItemCrudJson);
+			Array.prototype.push.apply(listCrud, this.listCrudObjJson);
+			Array.prototype.push.apply(listCrud, this.listCrudJsonArray);
+			return next(listCrud);
 		}).
 		then(() => {
 			this.serverConnection.$scope.$apply();
@@ -268,12 +278,13 @@ class CrudUiSkeleton extends DataStoreItem {
 	}
 
     validateFieldChange(fieldName, newValue, oldValue) {
-    	console.log(`[CrudUiSkeleton.validateFieldChange(fieldName=${fieldName}, newValue=${newValue}, oldValue=${oldValue})] this.instance[${fieldName}] = ${this.instance[fieldName]}`);
+    	console.log(`[CrudUiSkeleton(${this.constructor.name}).validateFieldChange(fieldName=${fieldName}, newValue=${newValue}, oldValue=${oldValue})] this.instance[${fieldName}] = ${this.instance[fieldName]}`);
     	return true;
     }
 
 	parseValue(fieldName, instance) {
 		if (instance == undefined) instance = this.instance;
+		instance[fieldName] = undefined;
 		const field = this.properties[fieldName];
 
 		if (field.flags != undefined && field.flags != null) {

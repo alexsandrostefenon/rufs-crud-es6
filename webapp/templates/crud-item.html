@@ -6,7 +6,7 @@
 <form id="{{vm.formId}}" name="{{vm.formId}}" class="form-horizontal" role="form" ng-if="edit == true && vm.filterResults.length < vm.numMaxItems">
 	<div ng-include="'./templates/crud-model_form_body.html'"></div>
 
-    <div ng-if="vm.instance[vm.fieldFirst] != undefined" class="form-group">
+    <div ng-if="vm.fieldFirst == undefined || vm.instance[vm.fieldFirst] != undefined" class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
             <button ng-if="vm.rufsService.access.put == true" id="{{vm.formId}}-add" name="add" class="btn btn-primary" ng-disabled="{{vm.formId}}.$invalid" ng-click="vm.save()"><span class="glyphicon glyphicon-plus"></span> Add</button>
         </div>

@@ -11,6 +11,7 @@ class CrudCommom extends CrudUiSkeleton {
 		this.serverConnection.addRemoteListener(this);
 		this.activeTab = 0;
 		this.activeSchemaType = "schema";
+		this.schemaResponse = OpenApi.getSchemaFromSchemas(this.serverConnection.openapi, this.rufsService.name);
 	}
 
 	process(action, params) {
@@ -29,10 +30,8 @@ class CrudCommom extends CrudUiSkeleton {
 					}
 				}
 			} else if (this.activeSchemaType != "schema") {
-				const schema = OpenApi.getSchemaFromSchemas(this.serverConnection.openapi, this.rufsService.name);
-
-				if (schema != undefined) {
-					this.setSchema(schema);
+				if (this.schemaResponse != undefined) {
+					this.setSchema(this.schemaResponse);
 					this.activeSchemaType = "schema";
 					this.updateFields();
 				}
@@ -48,28 +47,31 @@ class CrudCommom extends CrudUiSkeleton {
 				this.templateModel = "./templates/crud-model_search.html";
 
 				if (params.filter != undefined || params.filterRange != undefined || params.filterRangeMin != undefined || params.filterRangeMax != undefined) {
-					if (params.filterRange != undefined) {
-						for (let [fieldName, value] of Object.entries(params.filterRange)) this.setFilterRange(fieldName, value);
-					}
+					promise = this.rufsService.process(action, params).
+					then(() => this.list = this.rufsService.list).
+					then(() => {
+						if (params.filterRange != undefined) {
+							for (let [fieldName, value] of Object.entries(params.filterRange)) this.setFilterRange(fieldName, value);
+						}
 
-					this.applyFilter(params.filter, params.filterRangeMin, params.filterRangeMax);
-					promise = this.setPage(1);
+						this.applyFilter(params.filter, params.filterRangeMin, params.filterRangeMax);
+						return this.setPage(1);
+					});
+				} else {
+					promise = Promise.resolve();
 				}
 
 				if (params.aggregate != undefined) {
-					promise = Promise.resolve().then(() => this.applyAggregate(params.aggregate));
+					promise = promise.then(() => this.applyAggregate(params.aggregate));
 				}
 
 				if (params.sort != undefined) {
-					this.applySort(params.sort);
+					promise = promise.then(() => this.applySort(params.sort));
 				}
 
 				if (params.pagination != undefined) {
-					promise = this.paginate(params.pagination);
+					promise = promise.then(() => this.paginate(params.pagination));
 				}
-
-				if (promise == undefined)
-					promise = Promise.resolve();
 			} else if (action == "new") {
 				this.templateModel = "./templates/crud-model_new.html";
 				promise = this.setValues(params.overwrite, true);

@@ -11,25 +11,45 @@ import {ServerConnectionUI} from "./ServerConnectionUI.js";
 // CrudController differ of CrudCommom by angular $scope dependency, used in $scope.apply() pos promise rendering
 class CrudController extends CrudCommom {
 
+	static splitPathParams() {
+		const ret = {};
+    	ret.url = new URL(window.location.hash.substring(2), window.location.href);
+    	const path = ret.url.pathname;
+		const list = path.split('/');
+		ret.serviceName = CaseConvert.underscoreToCamel(list[list.length-2]);
+		ret.action = list[list.length-1];
+		return ret;
+	}
+
     constructor(serverConnection, $scope) {
     	serverConnection.clearRemoteListeners();
     	serverConnection.$scope = $scope;
-    	const url = new URL(window.location.hash.substring(2), window.location.href);
-    	const path = url.pathname;
-		const list = path.split('/');
-		const action = list[list.length-1];
-		const serviceName = CaseConvert.underscoreToCamel(list[list.length-2]);
-		const service = serverConnection.services[serviceName];
+		const pathParams = CrudController.splitPathParams();
+		const service = serverConnection.services[pathParams.serviceName];
 
 		if (service == undefined) {
-			const msg = `[CrudController.constructor(${serviceName})] : service not registred in serverConnection`;
+			const msg = `[CrudController.constructor(${pathParams.serviceName})] : service not registred in serverConnection`;
 			console.error(msg);
 			throw new Error(msg);
 		}
 
-    	super(serverConnection, serverConnection.services[serviceName]);
-    	this.searchParams = HttpRestRequest.urlSearchParamsToJson(url.search, this.properties);
-    	this.process(action, this.searchParams);
+    	super(serverConnection, serverConnection.services[pathParams.serviceName]);
+    	this.searchParams = HttpRestRequest.urlSearchParamsToJson(pathParams.url.search, this.properties);
+
+    	function fn(controller) {
+			const pathParams = CrudController.splitPathParams();
+			controller.process(pathParams.action, controller.searchParams).then(response => {
+				if (pathParams.action == "edit") {
+					controller.setValues(response.data, false).then(() => {
+						controller.serverConnection.$scope.$apply();
+					});
+				}
+			});
+    	}
+
+		this.crudCommomResponse = new CrudCommom(serverConnection, this.rufsService);
+    	//serverConnection.$timeout(fn, 1000, true, this);
+    	fn(this);
     }
 
 	process(action, params) {
@@ -53,7 +73,8 @@ class CrudController extends CrudCommom {
 	}
 
     get(primaryKey) {
-    	return super.get(primaryKey).then(response => {
+    	return super.get(primaryKey).
+    	then(response => {
 			// monta a lista dos CrudItem
     		const dependents = this.serverConnection.getDependents(this.rufsService.name);
 
@@ -75,6 +96,9 @@ class CrudController extends CrudCommom {
 				}
 			}
 
+    		return response;
+    	}).
+    	then(response => {
 			this.serverConnection.$scope.$apply();
     		return response;
     	});
@@ -117,13 +141,14 @@ class CrudController extends CrudCommom {
 					ServerConnectionUI.changeLocationHash(this.rufsService.path + "/" + "edit", {primaryKey});
 				}
 			} else {
-				const schema = OpenApi.getSchemaFromSchemas(this.serverConnection.openapi, this.rufsService.name);
-				const crudObjJson = new CrudObjJson(this, schema.properties, "", `Resposta ${this.listCrudObjJsonResponse.length + 1}`, this.serverConnection);
-				crudObjJson.get(response.data);
-		    	this.listCrudObjJsonResponse.unshift(crudObjJson);
+				this.crudCommomResponse.process("search", {});
+//				this.crudItemJsonResponse.get(response);
+//				this.goToSearch();
 			}
 
 			return response;
+		}).catch(err => {
+			this.serverConnection.$scope.$apply();
 		});
 	}
 	
