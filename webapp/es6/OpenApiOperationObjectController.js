@@ -23,6 +23,19 @@ class OpenApiOperationObjectController extends CrudController {
        	this.listItemCrudJson.push(new CrudItemJson(this, this.properties.response.properties, "response", "Response Ok", this.serverConnection));
     }
 
+    get(primaryKey) {
+    	return super.get(primaryKey).
+    	then(response => {
+//    		if (response.data && response.data.response && response.data.response.Itens && response.data.response.Itens.items) response.data.response.Itens.items = response.data.response.Itens.items.properties;
+//    		if (response.data && response.data.response && response.data.response.Properties && response.data.response.Properties.properties) response.data.response.Properties = response.data.response.Properties.properties;
+    		return response;
+    	}).
+    	then(response => {
+			this.serverConnection.$scope.$apply();
+    		return response;
+    	});
+    }
+	
 }
 
 export {OpenApiOperationObjectController}

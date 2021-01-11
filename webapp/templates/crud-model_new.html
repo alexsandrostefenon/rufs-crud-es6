@@ -5,8 +5,8 @@
 
     <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
-		<button id="{{vm.formId}}-save"   name="save"   class="btn btn-default" ng-click="vm.save()"       ng-disabled="vm.isClean() || {{vm.formId}}.$invalid"><span class="glyphicon glyphicon-save"  ></span> {{vm.translation.save}}</button>
-		<button id="{{vm.formId}}-cancel" name="cancel" class="btn btn-primary" ng-click="vm.goToSearch()"                                                     ><span class="glyphicon glyphicon-remove"></span> {{vm.translation.cancel}}</button>
+		<button id="{{vm.formId}}-save"   name="save"   class="btn btn-default" ng-click="vm.save()"       ng-disabled="vm.isValid() == false"><span class="glyphicon glyphicon-save"  ></span> {{vm.translation.save}}</button>
+		<button id="{{vm.formId}}-cancel" name="cancel" class="btn btn-primary" ng-click="vm.goToSearch()"                                    ><span class="glyphicon glyphicon-remove"></span> {{vm.translation.cancel}}</button>
       </div>
     </div>
 </form>
@@ -15,4 +15,4 @@
 <crud-obj-json ng-repeat="item in vm.listCrudObjJson" vm="item" edit="true"></crud-obj-json>
 <crud-json-array ng-repeat="item in vm.listCrudJsonArray" vm="item" edit="true"></crud-json-array>
 
-<crud-table crud="vm.crudCommomResponse"></crud-table>
+<crud-obj-json vm="vm.crudObjJsonResponse" edit="false"></crud-obj-json>

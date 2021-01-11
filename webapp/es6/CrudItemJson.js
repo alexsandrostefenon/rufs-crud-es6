@@ -31,7 +31,6 @@ class CrudItemJson extends CrudUiSkeleton {
 	get(parentInstance) {
 		const data = parentInstance[this.fieldNameExternal] || {};
 		const obj = typeof(data) == "string" ? JSON.parse(data) : data;
-//		return this.setValues(obj, false);
 		this.list = [];
 
 		for (var itemName in obj) {
@@ -119,7 +118,7 @@ class CrudItemJson extends CrudUiSkeleton {
 				promise = this.buildFieldFilterResults();
 			}
 
-			return promise.then(() => this.setValues(item, false));
+			return promise.then(() => this.setValues(item, false, false));
 		});
 	}
 

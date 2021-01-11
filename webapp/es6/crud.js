@@ -16,9 +16,10 @@ class ServerConnectionService extends ServerConnectionUI {
 
 class LoginController {
 
-    constructor(serverConnection, server) {
+    constructor(serverConnection, server, $scope) {
 		this.serverConnection = serverConnection;
 		this.server = server;
+		this.$scope = $scope;
 //		this.loginPath = "base/rest/login";
 		this.user = "";
 		this.password = "";
@@ -34,7 +35,11 @@ class LoginController {
     	// TODO : resolve path to load from UI
     	if (loginPath == undefined) loginPath = this.loginPath;
     	this.path = "";
-    	return this.serverConnection.login(this.server, this.path, loginPath, this.user, HttpRestRequest.MD5(this.password), message => this.message = message);
+    	return this.serverConnection.login(this.server, this.path, loginPath, this.user, HttpRestRequest.MD5(this.password), message => this.message = message).
+    	catch(res => {
+			this.$scope.$apply();
+			return res;
+    	});
     }
 
 }
@@ -64,11 +69,11 @@ class Crud {
     		return new CrudController(ServerConnectionService, $scope);
     	});
 
-    	$controllerProvider.register('LoginController', function(ServerConnectionService) {
+    	$controllerProvider.register('LoginController', function(ServerConnectionService, $scope) {
     		const url = new URL(window.location.hash.substring(2), window.location.href);
     		const server = url.searchParams.get("server");
     		console.log("Crud.initialize : LoginController.server = ", server);
-    		return new LoginController(ServerConnectionService, server);
+    		return new LoginController(ServerConnectionService, server, $scope);
     	});
 
     	$controllerProvider.register("MenuController", function(ServerConnectionService) {

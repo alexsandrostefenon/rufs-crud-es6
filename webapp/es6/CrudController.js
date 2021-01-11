@@ -40,14 +40,14 @@ class CrudController extends CrudCommom {
 			const pathParams = CrudController.splitPathParams();
 			controller.process(pathParams.action, controller.searchParams).then(response => {
 				if (pathParams.action == "edit") {
-					controller.setValues(response.data, false).then(() => {
+					controller.setValues(response.data, false, false).then(() => {
 						controller.serverConnection.$scope.$apply();
 					});
 				}
 			});
     	}
 
-		this.crudCommomResponse = new CrudCommom(serverConnection, this.rufsService);
+		this.crudObjJsonResponse = new CrudObjJson({}, this.schemaResponse.properties, "data", "Response", serverConnection);
     	//serverConnection.$timeout(fn, 1000, true, this);
     	fn(this);
     }
@@ -141,8 +141,8 @@ class CrudController extends CrudCommom {
 					ServerConnectionUI.changeLocationHash(this.rufsService.path + "/" + "edit", {primaryKey});
 				}
 			} else {
-				this.crudCommomResponse.process("search", {});
-//				this.crudItemJsonResponse.get(response);
+//				this.crudCommomResponse.process("search", {});
+				return this.crudObjJsonResponse.get(response).then(() => response);
 //				this.goToSearch();
 			}
 

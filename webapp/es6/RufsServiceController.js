@@ -16,11 +16,11 @@ class RufsServiceController extends CrudController {
 		this.properties.method.orderIndex = 3;
 		this.properties.method.sortType = "asc";
 		this.properties.parameter.orderIndex = 4;
-//		const defaultValues = {type: "s", updatable: true, maxLength: 255, precision: 9, scale: 3, hiden: false, primaryKey: false, required: false};
+
     	const schemaProperties = {
     			"hiden":{"type": "boolean", "orderIndex": 1, "sortType": "desc"},
     			// OpenApi / JSON Schema
-    			"required":{"type": "boolean", "orderIndex": 2, "sortType": "asc"},
+    			"essential":{"type": "boolean", "orderIndex": 2, "sortType": "asc"},
     			"type":{"options": ["string", "integer", "boolean", "number", "date-time", "date", "time"]},
     			"maxLength":{"type": "integer"},
     			"precision":{"type": "integer"},

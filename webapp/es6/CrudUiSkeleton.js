@@ -18,7 +18,6 @@ class CrudUiSkeleton extends DataStoreItem {
 	}
 
 	updateFields() {
-		// type: "i", service: "serviceName", default: null, hiden: false, required: false, flags: ["a", "b"], readOnly: false
 		for (let fieldName in this.properties) {
 			let field = this.properties[fieldName];
 			field.filter = {};
@@ -226,15 +225,15 @@ class CrudUiSkeleton extends DataStoreItem {
 		return ServerConnectionUI.buildLocationHash(service.path + "/" + action, {primaryKey: item.primaryKey});
     }
 
-	setValues(obj, enableDefault) {
-		return super.setValues(obj, enableDefault).
+	setValues(obj, enableDefault, enableNull) {
+		return super.setValues(obj, enableDefault, enableNull).
 		then(() => {
 			// fieldFirst is used in form_body html template
 			this.fieldFirst = undefined;
 			const list = Object.entries(this.properties);
-			let filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true && field.required == true && field.type != "object" && field.type != "array" && this.instance[fieldName] == undefined);
-			if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true && field.required == true && field.type != "object" && field.type != "array");
-			if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true && field.required == true);
+			let filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true && field.essential == true && field.type != "object" && field.type != "array" && this.instance[fieldName] == undefined);
+			if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true && field.essential == true && field.type != "object" && field.type != "array");
+			if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true && field.essential == true);
 			if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true && field.readOnly != true);
 			if (filter.length == 0) filter = list.filter(([fieldName, field]) => field.hiden != true);
 //			if (filter.length > 0) this.fieldFirst = filter[0][0];
