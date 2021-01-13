@@ -133,9 +133,34 @@ class CrudUiSkeleton extends DataStoreItem {
 					const rufsService = this.serverConnection.getForeignService(this, fieldName);
 
 					if (rufsService != undefined) {
-						let fieldFilter = Object.entries(field.filter);
+						if (Object.entries(field.filter).length == 0) {
+/*
+							const foreignKeyDescription = this.getForeignKeyDescription(openapi, this, fieldName);
 
-						if (fieldFilter.length > 0) {
+							if (foreignKeyDescription != undefined) {
+								for (let [fieldRef, fieldNameMap] of Object.entries(foreignKeyDescription.fieldsRef)) {
+									if (typeof(fieldNameMap) == "string") {
+										if (fieldNameMap.startsWith("*") == true) {
+											field.filter[fieldRef] = fieldNameMap.substring(1);
+										}
+									}
+								}
+							}
+*/
+							const pos = field.$ref.indexOf("?");
+
+							if (pos >= 0 && Qs != undefined) {
+								const primaryKey = Qs.parse(field.$ref.substring(pos), {ignoreQueryPrefix: true, allowDots: true});
+
+								for (const [fieldName, value] of Object.entries(primaryKey)) {
+									if (typeof(value) == "string" && value.startsWith("*") == true) {
+										field.filter[fieldName] = OpenApi.copyValue(field, value.substring(1));
+									}
+								}
+							}
+						}
+
+						if (Object.entries(field.filter).length > 0) {
 							field.filterResults = [];
 							field.filterResultsStr = [];
 

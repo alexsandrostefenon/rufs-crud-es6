@@ -15,4 +15,4 @@
 <crud-obj-json ng-repeat="item in vm.listCrudObjJson" vm="item" edit="true"></crud-obj-json>
 <crud-json-array ng-repeat="item in vm.listCrudJsonArray" vm="item" edit="true"></crud-json-array>
 
-<crud-obj-json vm="vm.crudObjJsonResponse" edit="false"></crud-obj-json>
+<crud-obj-json ng-if="vm.crudObjJsonResponse != null" vm="vm.crudObjJsonResponse" edit="false"></crud-obj-json>

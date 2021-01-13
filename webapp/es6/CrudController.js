@@ -47,7 +47,6 @@ class CrudController extends CrudCommom {
 			});
     	}
 
-		this.crudObjJsonResponse = new CrudObjJson({}, this.schemaResponse.properties, "data", "Response", serverConnection);
     	//serverConnection.$timeout(fn, 1000, true, this);
     	fn(this);
     }
@@ -141,7 +140,7 @@ class CrudController extends CrudCommom {
 					ServerConnectionUI.changeLocationHash(this.rufsService.path + "/" + "edit", {primaryKey});
 				}
 			} else {
-//				this.crudCommomResponse.process("search", {});
+				this.crudObjJsonResponse = new CrudObjJson({}, this.schemaResponse.properties, "data", "Response", this.serverConnection);
 				return this.crudObjJsonResponse.get(response).then(() => response);
 //				this.goToSearch();
 			}
