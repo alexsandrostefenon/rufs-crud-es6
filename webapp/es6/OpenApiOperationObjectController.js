@@ -8,6 +8,7 @@ class OpenApiOperationObjectController extends CrudController {
 
     constructor(serverConnection, $scope) {
     	super(serverConnection, $scope);
+
     	this.rufsService.label = "OpenApi/Swagger Operations";
 
 		this.properties.operationId.orderIndex = 1;
@@ -18,9 +19,11 @@ class OpenApiOperationObjectController extends CrudController {
 		this.properties.method.sortType = "asc";
 		this.properties.parameter.orderIndex = 4;
 
-       	this.listItemCrudJson.push(new CrudItemJson(this, this.properties.parameter.properties, "parameter", "Query String", this.serverConnection));
-       	this.listItemCrudJson.push(new CrudItemJson(this, this.properties.requestBody.properties, "requestBody", "Request Body", this.serverConnection));
-       	this.listItemCrudJson.push(new CrudItemJson(this, this.properties.response.properties, "response", "Response Ok", this.serverConnection));
+		const options = {disableOrderByName: true};
+
+       	this.listItemCrudJson.push(new CrudItemJson(this, this.properties.parameter.properties, "parameter", "Query String", this.serverConnection, options));
+       	this.listItemCrudJson.push(new CrudItemJson(this, this.properties.requestBody.properties, "requestBody", "Request Body", this.serverConnection, options));
+       	this.listItemCrudJson.push(new CrudItemJson(this, this.properties.response.properties, "response", "Response Ok", this.serverConnection, options));
     }
 
     get(primaryKey) {

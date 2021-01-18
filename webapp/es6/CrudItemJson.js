@@ -5,14 +5,14 @@ import {CrudUiSkeleton} from "./CrudUiSkeleton.js";
 
 class CrudItemJson extends CrudUiSkeleton {
 
-	constructor(parent, properties, fieldNameExternal, title, serverConnection, nameOptions) {
+	constructor(parent, properties, fieldNameExternal, title, serverConnection, options) {
 		let _fields = {};
 		_fields._name = {};
 		_fields._name.type = "string";
-		_fields._name.sortType = "asc";
-		
-		if (nameOptions != undefined) {
-			_fields._name.enum = nameOptions;
+		if (options == null || options.disableOrderByName != true) _fields._name.sortType = "asc";
+
+		if (options != null && options.nameOptions != undefined) {
+			_fields._name.enum = options.nameOptions;
 		}
 		
 		for (let fieldName in properties) _fields[fieldName] = properties[fieldName];
@@ -21,7 +21,7 @@ class CrudItemJson extends CrudUiSkeleton {
 		this.parent = parent;
 		this.fieldNameExternal = fieldNameExternal;
 		this.title = title || this.parent.properties[this.fieldNameExternal].title || this.serverConnection.convertCaseAnyToLabel(this.fieldNameExternal);
-		this.nameOptions = nameOptions;
+		if (options != null) this.nameOptions = options.nameOptions;
 	}
 
 	process(action, params) {

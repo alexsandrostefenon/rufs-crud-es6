@@ -231,7 +231,7 @@ class ServerConnectionUI extends ServerConnection {
 					this.menu[menuName] = [];
 				}
 
-				this.menu[menuName].unshift(menuItem);
+				this.menu[menuName].push(menuItem);
 			}
 		}
     	// tradução

@@ -24,7 +24,7 @@ class UserController extends CrudController {
     		nameOptionsRoles.push(name);
     	}
 
-    	this.listItemCrudJson.push(new CrudItemJson(this, fieldsRoles, "roles", "Controle de Acesso", this.serverConnection, nameOptionsRoles));
+    	this.listItemCrudJson.push(new CrudItemJson(this, fieldsRoles, "roles", "Controle de Acesso", this.serverConnection, {nameOptions: nameOptionsRoles}));
     	//
     	// Menu do usuário
 //    	$routeProvider.when("/app/:name/:action", {templateUrl: "/crud/templates/crud.html", controller: "CrudController", controllerAs: "vm"});
