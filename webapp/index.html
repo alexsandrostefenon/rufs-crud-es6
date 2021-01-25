@@ -37,14 +37,13 @@
 	
 	       <div class="uib-collapse navbar-collapse" uib-collapse="vm.isCollapsed">
 			<ul class="nav navbar-nav">
-			    <div class="btn-group" uib-dropdown ng-repeat="(menuName, menuItems) in vm.serverConnection.menu track by $index" is-open="vm.status.isOpen_{{menuName}}">
-		      		<button id="single-button-{{menuName}}" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">{{vm.label(menuName)}}<span class="caret"></span></button>
+			    <div class="btn-group" uib-dropdown ng-repeat="(menuName, menuItems) in vm.serverConnection.menu track by $index" is-open='vm.status.isOpen_{{vm.removeAcentos(menuName)}}'>
+		      		<button id='single-button-{{vm.removeAcentos(menuName)}}' type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">{{vm.label(menuName)}}<span class="caret"></span></button>
 	
 				    <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
 				       	<li role="menuitem" ng-repeat="menuItem in menuItems"><a href="#!/app/{{menuItem.path}}" ng-click="vm.isCollapsed = !(vm.isCollapsed)">{{menuItem.label}}</a></li>
 				    </ul>
 			    </div>
-	      		<button id="single-button-logout" type="button" class="btn btn-primary" ng-click="vm.serverConnection.logout()"> Sair</button>
 			</ul>
 	       </div>
 	     </div>

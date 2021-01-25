@@ -25,7 +25,7 @@ class LoginController {
 		this.password = "";
 		this.message = "";
 
-	  	if (this.serverConnection.user != undefined) {
+	  	if (this.serverConnection.httpRest != null && this.serverConnection.httpRest.token != null) {
 	    	this.serverConnection.logout();
 	    	window.location.reload();
 		}
@@ -41,7 +41,6 @@ class LoginController {
 			return res;
     	});
     }
-
 }
 
 class MenuController {
@@ -54,6 +53,11 @@ class MenuController {
     label(str) {
     	return this.serverConnection.convertCaseAnyToLabel(str);
     }
+
+	removeAcentos(text) {
+		const ret = text.normalize("NFD").replace(/[ \u0300-\u036f]/g, "");
+		return ret;
+	}
 
 }
 
