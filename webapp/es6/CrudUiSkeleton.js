@@ -213,6 +213,8 @@ class CrudUiSkeleton extends DataStoreItem {
 	}
 
 	process(action, params) {
+		this.action = action;
+
 		for (let [fieldName, property] of Object.entries(this.properties)) {
 			if (property.type == "object" && property.properties != undefined && property.hiden != true) {
 				if (this.listItemCrudJson.find(crudUi => crudUi.name == fieldName) != undefined) continue;
@@ -240,17 +242,51 @@ class CrudUiSkeleton extends DataStoreItem {
 			});
 		});
 	}
+
+	searchSelect(fieldName, obj) {
+//		console.log(`${this.constructor.name}.searchSelect(${fieldName}, ${JSON.stringify(obj)})`);
+		if (this.serverConnection.selectOut == null) this.serverConnection.selectOut = {};
+		this.serverConnection.selectOut[fieldName] = obj;
+		window.history.back();
+	}
 	// fieldName, 'view', item, false
-    goToField(fieldName, action, obj) {
+    goToField(fieldName, action, obj, isGoNow) {
 //    	console.log(`[${this.constructor.name}.goToField(${fieldName}, ${action})]`);
     	const field = this.properties[fieldName];
-		if (field.$ref == undefined) return "";
+		if (field.$ref == undefined) return obj != null && obj[fieldName] != null && typeof(obj[fieldName]) == "string" && obj[fieldName].startsWith("#") == true ? obj[fieldName] : "";
+		// vm.goToField(fieldName, 'search', vm.instance)
 		const item = OpenApi.getPrimaryKeyForeign(this.serverConnection.openapi, this, fieldName, obj, this.serverConnection.services);
 		const service = this.serverConnection.getSchema(item.table);
-		return ServerConnectionUI.buildLocationHash(service.path + "/" + action, {primaryKey: item.primaryKey});
+		const queryObj = {};
+
+		if (action == "search" && isGoNow == true) {
+			queryObj.selectOut = fieldName;
+			this.serverConnection.useHistoryState = true;
+			window.history.replaceState(this.instance, "Edited values");
+		} else {
+			queryObj.primaryKey = item.primaryKey;
+		}
+
+		const url = ServerConnectionUI.buildLocationHash(service.path + "/" + action, queryObj);
+
+		if (url == "") {
+			
+		} else if (url != "" && isGoNow == true) {
+    		window.location.assign(url);
+    	}
+
+    	return url;
     }
 
 	setValues(obj, enableDefault, enableNull) {
+		if ((this.action == "new" || this.action == "edit") && this.serverConnection.selectOut != null && this.serverConnection.useHistoryState == true && window.history.state != null) {
+			if (obj == null) obj = {};
+
+			for (let [fieldName, property] of Object.entries(this.properties)) {
+				obj[fieldName] = this.serverConnection.selectOut[fieldName] || window.history.state[fieldName] || obj[fieldName];
+			}
+		}
+
 		return super.setValues(obj, enableDefault, enableNull).
 		then(() => {
 			// fieldFirst is used in form_body html template
@@ -280,6 +316,12 @@ class CrudUiSkeleton extends DataStoreItem {
 		});
 	}
 
+	clearForm() {
+		this.serverConnection.selectOut = {};
+		this.serverConnection.useHistoryState = false;
+		return this.clear();
+	}
+
 	paginate(params) {
 		if (params == undefined) params = {};
 		if (params.pageSize == undefined) params.pageSize = CrudUiSkeleton.calcPageSize();
@@ -302,8 +344,17 @@ class CrudUiSkeleton extends DataStoreItem {
 	}
 
     validateFieldChange(fieldName, newValue, oldValue) {
-    	console.log(`[CrudUiSkeleton(${this.constructor.name}).validateFieldChange(fieldName=${fieldName}, newValue=${newValue}, oldValue=${oldValue})] this.instance[${fieldName}] = ${this.instance[fieldName]}`);
-    	return true;
+		console.log(`[CrudUiSkeleton(${this.constructor.name}).validateFieldChange(fieldName=${fieldName}, newValue=${newValue}, oldValue=${oldValue})] this.instance[${fieldName}] = ${this.instance[fieldName]}`);
+		let ret = true;
+
+		if (ret == true) {
+			let stateObj = window.history.state;
+			if (stateObj == null) stateObj = {};
+			stateObj[fieldName] = newValue == oldValue ? this.instance[fieldName] : newValue;
+//			window.history.replaceState(stateObj, "Edited values");
+		}
+
+		return ret;
     }
 
 	parseValue(fieldName, instance) {

@@ -3,6 +3,8 @@ import {CrudItemJson} from "./CrudItemJson.js";
 import {CrudJsonArray} from "./CrudJsonArray.js";
 import {CaseConvert} from "./CaseConvert.js";
 import {HttpRestRequest} from "./ServerConnection.js";
+import {ServerConnectionUI} from "./ServerConnectionUI.js";
+import {OpenApi} from "./OpenApi.js";
 
 class OpenApiOperationObjectController extends CrudController {
 
@@ -29,8 +31,11 @@ class OpenApiOperationObjectController extends CrudController {
     get(primaryKey) {
     	return super.get(primaryKey).
     	then(response => {
+			if (response.data != null) {
 //    		if (response.data && response.data.response && response.data.response.Itens && response.data.response.Itens.items) response.data.response.Itens.items = response.data.response.Itens.items.properties;
 //    		if (response.data && response.data.response && response.data.response.Properties && response.data.response.Properties.properties) response.data.response.Properties = response.data.response.Properties.properties;
+			}
+
     		return response;
     	}).
     	then(response => {
@@ -38,7 +43,7 @@ class OpenApiOperationObjectController extends CrudController {
     		return response;
     	});
     }
-	
+
 }
 
 export {OpenApiOperationObjectController}

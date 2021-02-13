@@ -15,6 +15,7 @@ class CrudCommom extends CrudUiSkeleton {
 	}
 
 	process(action, params) {
+		this.action = action;
 		return Promise.resolve().
 		then(() => {
 		}).
@@ -112,18 +113,17 @@ class CrudCommom extends CrudUiSkeleton {
 	// fieldName, 'view', item, false
     goToField(fieldName, action, obj, isGoNow) {
 //    	console.log(`[${this.constructor.name}.goToField(${fieldName}, ${action})]`);
-		let url = super.goToField(fieldName, action, obj);
+		let url = super.goToField(fieldName, action, obj, isGoNow);
 
 		if (url == "") {
 			const service = this.rufsService;
 			const primaryKey = this.rufsService.getPrimaryKey(obj);
 			url = ServerConnectionUI.buildLocationHash(service.path + "/" + action, {primaryKey});
-		}
 
-    	if (isGoNow == true) {
-//    		ServerConnectionUI.changeLocationHash(service.path + "/" + action, {primaryKey});
-    		ServerConnectionUI.changeLocationHash(url);
-    	}
+			if (isGoNow == true) {
+				ServerConnectionUI.changeLocationHash(url);
+			}
+		}
 
     	return url;
     }

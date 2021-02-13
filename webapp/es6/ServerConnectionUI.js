@@ -217,7 +217,7 @@ class ServerConnectionUI extends ServerConnection {
 
     // private <- login
 	loginDone() {
-        this.menu = {user:[{path:"login", label:"Exit"}]};
+        this.menu = {geral:[{path:"login", label:"Exit"}]};
         // user menu
 		if (this.userMenu != undefined && this.userMenu.length > 0) {
 			console.log("menu :", this.userMenu);
@@ -275,7 +275,12 @@ class ServerConnectionUI extends ServerConnection {
 				if (path.endsWith(".js") == false) path = path + ".js";
 				console.log("loading...", path);
 
-				let promise = import(path).then(module => {
+				let promise = import(path).
+				catch(err => {
+					console.error(`[${this.constructor.name}.loginDone()] : fail to import module :`, err);
+					throw err;
+				}).
+				then(module => {
 					const controllerName = route.controller;
 					console.log("...loaded:", controllerName, "route:", route);
 

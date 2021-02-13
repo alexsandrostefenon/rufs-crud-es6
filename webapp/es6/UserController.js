@@ -29,7 +29,7 @@ class UserController extends CrudController {
     	// Menu do usuário
 //    	$routeProvider.when("/app/:name/:action", {templateUrl: "/crud/templates/crud.html", controller: "CrudController", controllerAs: "vm"});
     	const fieldsMenu = {
-    			"menu":{"default":"action", "enum":["action","help","configuration","report","form"]},
+    			"menu":{"default":"action"},
     			"label":{},
     			"path":{"default":"service/action?filter={}&aggregate={}"}
     			};
@@ -87,7 +87,7 @@ routes : '[{"path":"/app/request/:action","controller":"RequestController"}]'
 
         this.instance.roles = JSON.stringify(newRoles);
         this.instance.menu = JSON.stringify(menu);
-        if (this.instance.password.length < 32) this.instance.password = HttpRestRequest.MD5(this.instance.password);
+        if (this.instance.password != null && this.instance.password.length < 32) this.instance.password = HttpRestRequest.MD5(this.instance.password);
         return super.update();
     }
 

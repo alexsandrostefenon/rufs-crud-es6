@@ -33,7 +33,7 @@
         </div>
 
         <div class="col-xs-1" ng-if="field.$ref != undefined && field.readOnly != true">
-            <a id="{{vm.formId}}-{{fieldName}}-search" name="search" class="btn btn-secondary" href="{{vm.goToField(fieldName, 'search')}}"><span class="glyphicon glyphicon-search"></span></a>
+            <a id="{{vm.formId}}-{{fieldName}}-search" name="search" class="btn btn-secondary" href ng-click="vm.goToField(fieldName, 'search', vm.instance, true)"><span class="glyphicon glyphicon-search"></span></a>
         </div>
 	</div>
 	<!-- field.flags : String[], vm.instanceFlags[fieldName] : Boolean[] -->
