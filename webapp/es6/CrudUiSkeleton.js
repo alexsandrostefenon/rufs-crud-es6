@@ -261,6 +261,13 @@ class CrudUiSkeleton extends DataStoreItem {
 
 		if (action == "search" && isGoNow == true) {
 			queryObj.selectOut = fieldName;
+			queryObj.filter = {};
+
+			if (item.isUniqueKey == false) {
+				for (let [fieldName, value] of Object.entries(item.primaryKey))
+					if (value != null) queryObj.filter[fieldName] = value;
+			}
+
 			this.serverConnection.useHistoryState = true;
 			window.history.replaceState(this.instance, "Edited values");
 		} else {
