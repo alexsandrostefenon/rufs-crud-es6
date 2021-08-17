@@ -6,6 +6,7 @@ class CrudMicroService extends RufsMicroService {
 
 	constructor(config, appName, checkRufsTables) {
 		const defaultStaticPaths = path.join(path.dirname(url.fileURLToPath(import.meta.url)), "webapp");
+		if (config == null) config = {};
 		config.defaultStaticPaths = config.defaultStaticPaths != undefined ? config.defaultStaticPaths + "," + defaultStaticPaths : defaultStaticPaths;
 		super(config, appName || "crud", checkRufsTables);
 	}
