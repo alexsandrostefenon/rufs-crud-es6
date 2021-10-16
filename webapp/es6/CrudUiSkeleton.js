@@ -125,6 +125,7 @@ class CrudUiSkeleton extends DataStoreItem {
 			return updateReferenceList(fieldName).then(() => next(propertyNames, ++index));
 		}
 
+		console.log(`buildFieldFilterResults :`, this.properties);
 		return next(Object.keys(this.properties), 0).
 		then(() => {
 			// faz uma referencia local a field.filterResultsStr, para permitir opção filtrada, sem alterar a referencia global
@@ -228,7 +229,7 @@ class CrudUiSkeleton extends DataStoreItem {
 					// 	constructor(parent, properties, fieldNameExternal, title, serverConnection) {
 					this.listCrudObjJson.push(new CrudUiSkeleton.CrudObjJson(this, property.properties, fieldName, property.title, this.serverConnection));
 				}
-			} else if (property.type == "array" && property.items != undefined && property.hiden != true) {
+			} else if (property.type == "array" && property.items != undefined && property.items.type == "object" && property.hiden != true) {
 				// 	constructor(parent, fieldNameExternal, schema, options, serverConnection) {
 				this.listCrudJsonArray.push(new CrudUiSkeleton.CrudJsonArray(this, fieldName, property.items, {"action": action}, this.serverConnection));
 			}

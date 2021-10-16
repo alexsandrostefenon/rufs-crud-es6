@@ -80,13 +80,14 @@ class CrudController extends CrudCommom {
 			for (let item of dependents) {
 				const rufsServiceOther = this.serverConnection.services[item.table];
 
-				if (rufsServiceOther != undefined) {
+				if (rufsServiceOther != null) {
 					let field = rufsServiceOther.properties[item.field];
 
-					if (field != undefined) {
+					if (field != null) {
 //						console.log(`[crudController.get] : checking CrudItem for ${item.field} to table ${item.table}`, this.rufsService.properties);
-						if (field.title != undefined)
+						if (field.title != null) {
 							this.listItemCrud.push(new CrudItem(this.serverConnection, item.table, item.field, this.primaryKey));
+						}
 					} else {
 						console.error(`[crudController.get] : invalid CrudItem configuration for table ${this.rufsService.name} : wrong field ${item.field} to table ${item.table}`, this.rufsService.properties);
 					}
