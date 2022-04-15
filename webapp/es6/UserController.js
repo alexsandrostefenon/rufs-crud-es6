@@ -63,9 +63,9 @@ routes : '[{"path":"/app/request/:action","controller":"RequestController"}]'
             }
         }
 
-        const oldRoles = this.original.roles != undefined ? JSON.parse(this.original.roles) : {};
-        const newRoles = this.instance.roles != undefined ? JSON.parse(this.instance.roles) : {};
-        const menu = this.instance.menu != undefined ? JSON.parse(this.instance.menu) : {};
+        const oldRoles = this.original.roles != undefined ? this.original.roles : {};
+        const newRoles = this.instance.roles != undefined ? this.instance.roles : {};
+        const menu = this.instance.menu != undefined ? this.instance.menu : {};
 
         for (let serviceName in newRoles) {
             if (oldRoles[serviceName] == undefined) {

@@ -29,7 +29,7 @@ class CrudJsonArray extends CrudUiSkeleton {
 		if (data != undefined) {
 			if (Array.isArray(data)) {
 				this.list = data;
-			} else if (typeof data === 'string' || data instanceof String) {
+			} else if ((typeof data === 'string' || data instanceof String) && data.length > 0) {
 				this.list = JSON.parse(data);
 			}
 		}

@@ -219,9 +219,8 @@ class ServerConnectionUI extends ServerConnection {
 	loginDone() {
         this.menu = {geral:[{path:"login", label:"Exit"}]};
         // user menu
-		if (this.userMenu != undefined && this.userMenu.length > 0) {
-			console.log("menu :", this.userMenu);
-			const menus = JSON.parse(this.userMenu);
+		if (this.userMenu != undefined) {
+			const menus = this.userMenu;
 
 			for (var menuId in menus) {
 				let menuItem = menus[menuId];
