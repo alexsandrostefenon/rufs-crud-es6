@@ -24,7 +24,7 @@ class UserController extends CrudController {
     		nameOptionsRoles.push(name);
     	}
 
-    	this.listItemCrudJson.push(new CrudItemJson(this, fieldsRoles, "roles", "Controle de Acesso", this.serverConnection, {nameOptions: nameOptionsRoles}));
+    	this.listItemCrudJson.push(new CrudItemJson(this, fieldsRoles, "rolesJson", "Controle de Acesso", this.serverConnection, {nameOptions: nameOptionsRoles}));
     	//
     	// Menu do usuário
 //    	$routeProvider.when("/app/:name/:action", {templateUrl: "/crud/templates/crud.html", controller: "CrudController", controllerAs: "vm"});
@@ -46,6 +46,14 @@ class UserController extends CrudController {
     	this.listCrudJsonArray.push(new CrudJsonArray(this, "routes", {"properties": fieldsRoute}, {"title": "Rotas de URL AngularJs"}, this.serverConnection));
     }
 
+	get(primaryKey) {
+		return this.rufsService.get(primaryKey).then(response => {
+			this.original = response.data;
+			// atualiza as strings de referência
+			return this.setValues(response.data, false, false).then(() => response);
+		});
+	}
+	
 	save() {
 	    this.instance.password = HttpRestRequest.MD5(this.instance.password);
 		return super.save();
@@ -77,7 +85,7 @@ routes : '[{"path":"/app/request/:action","controller":"RequestController"}]'
 
                 for (let dependency of listDependencies) {
                     if (newRoles[dependency] == undefined) {
-                        newRoles[dependency] = {"get": true, "post": false, "patch": false, "put": false, "delete": false};// {}
+                        newRoles[dependency] = 0x01;// {}
                     }
                 }
 
@@ -85,8 +93,8 @@ routes : '[{"path":"/app/request/:action","controller":"RequestController"}]'
             }
         }
 
-        this.instance.roles = JSON.stringify(newRoles);
-        this.instance.menu = JSON.stringify(menu);
+        this.instance.roles = newRoles;
+        this.instance.menu = menu;
         if (this.instance.password != null && this.instance.password.length < 32) this.instance.password = HttpRestRequest.MD5(this.instance.password);
         return super.update();
     }
