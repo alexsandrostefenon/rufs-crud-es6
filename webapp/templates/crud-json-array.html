@@ -25,7 +25,7 @@
             <tr ng-repeat="item in vm.pagination.listPage">
 				<td>
 					<a href ng-click="vm.remove($index)"><span class="glyphicon glyphicon-trash"></span> Delete</a>
-					<a href ng-click="vm.edit($index)"><span class="glyphicon glyphicon-trash"></span> Edit</a>
+					<a href ng-click="vm.edit($index)" id="{{vm.formId}}-edit-{{item._name}}"><span class="glyphicon glyphicon-trash"></span> Edit</a>
 					<a href ng-click="vm.moveUp($index)"><span class="glyphicon glyphicon-arrow-up"></span> Up</a>
 					<a href ng-click="vm.moveDown($index)"><span class="glyphicon glyphicon-arrow-down"></span> Down</a>
 				</td>

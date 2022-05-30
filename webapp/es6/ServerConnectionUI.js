@@ -57,7 +57,7 @@ class CrudServiceUI extends RufsService {
 			if (pos >= 0 && pos != params.newPos) {
 				console.error(`[${this.constructor.name}.updateListStr(${this.name}, ${action})] : already exists string in listStr : list.length = ${list.length}, pos = ${pos}, oldPos = ${params.oldPos}, newPos = ${params.newPos}, str = ${str})`);
 				console.trace();
-				debugger;
+//				debugger;
 			}
 		}
 

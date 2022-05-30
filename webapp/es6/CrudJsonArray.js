@@ -34,7 +34,7 @@ class CrudJsonArray extends CrudUiSkeleton {
 			}
 		}
 		
-		return this.process();
+		return this.process(this.action);
 	}
 	// private, use in addItem, updateItem and removeItem
 	updateParent() {
@@ -45,7 +45,10 @@ class CrudJsonArray extends CrudUiSkeleton {
 		}
 
 		if (this.action != "edit") return this.paginate();
-		return this.parent.update().then(() => this.serverConnection.$scope.$apply());
+		return this.parent.update().
+		then(() => this.clear()).
+		then(() => this.setPage()).
+		then(() => this.serverConnection.$scope.$apply())
 	}
 
 	save() {

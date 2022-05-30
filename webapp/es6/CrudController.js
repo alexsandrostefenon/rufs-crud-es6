@@ -39,7 +39,7 @@ class CrudController extends CrudCommom {
     	function fn(controller) {
 			const pathParams = CrudController.splitPathParams();
 			controller.process(pathParams.action, controller.searchParams).then(response => {
-				if (pathParams.action == "edit") {
+				if (pathParams.action == "edit" && response && response.data) {
 					controller.setValues(response.data, false, false).then(() => {
 						controller.serverConnection.$scope.$apply();
 					});

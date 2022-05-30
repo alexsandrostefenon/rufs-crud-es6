@@ -46,7 +46,7 @@ class CrudItemJson extends CrudUiSkeleton {
 			this.list.push(item);
 		}
 		
-		return this.restrictNameOptions().then(() => this.process());
+		return this.restrictNameOptions().then(() => this.process(this.action));
 	}
 
 	restrictNameOptions() {
@@ -72,7 +72,7 @@ class CrudItemJson extends CrudUiSkeleton {
 			objItems[item._name] = obj;
 		}
 
-		this.parent.instance[this.fieldNameExternal] = JSON.stringify(objItems);
+		this.parent.instance[this.fieldNameExternal] = objItems
 		return this.restrictNameOptions().then(() => {
 			this.parent.rufsService.params.saveAndExit = false;
 			return this.parent.update().then(res => this.get(res.data));

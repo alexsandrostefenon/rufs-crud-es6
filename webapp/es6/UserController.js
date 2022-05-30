@@ -1,104 +1,165 @@
-import {CrudController} from "./CrudController.js";
-import {CrudItemJson} from "./CrudItemJson.js";
-import {CrudJsonArray} from "./CrudJsonArray.js";
-import {CaseConvert} from "./CaseConvert.js";
-import {HttpRestRequest} from "./ServerConnection.js";
+import { OpenApi } from "./OpenApi.js";
+import { CrudController } from "./CrudController.js";
+import { CrudItemJson } from "./CrudItemJson.js";
+import { CrudJsonArray } from "./CrudJsonArray.js";
+import { CaseConvert } from "./CaseConvert.js";
+import { HttpRestRequest } from "./ServerConnection.js";
 
 class UserController extends CrudController {
 
-    constructor(serverConnection, $scope) {
-    	super(serverConnection, $scope);
-        this.properties["password"].htmlType = "password";
-    	// Regras de acesso aos serviços
-		const fieldsRoles = {
-    			"get":{type:"boolean", "default":true},
-    			"post":{type:"boolean", "default":false},
-    			"patch":{type:"boolean", "default":false},
-    			"put":{type:"boolean", "default":false},
-    			"delete":{type:"boolean", "default":false}
-    			};
+	constructor(serverConnection, $scope) {
+		super(serverConnection, $scope);
+		this.properties["password"].htmlType = "password";
 
-    	const nameOptionsRoles = [];
+		const schemaRole = {
+			primaryKeys: ["path"],
+			properties: {
+				"path": {
+					type: "string",
+					enum: Object.keys(this.serverConnection.openapi.paths)
+				},
+				"mask": {
+					type: "integer",
+					"default": 0x01
+				},
+				"get": {
+					type: "boolean",
+					"default": true
+				},
+				"post": {
+					type: "boolean",
+					"default": false
+				},
+				"patch": {
+					type: "boolean",
+					"default": false
+				},
+				"put": {
+					type: "boolean",
+					"default": false
+				},
+				"delete": {
+					type: "boolean",
+					"default": false
+				}
+			}
+		}
 
-    	for (let name in this.serverConnection.services) {
-    		nameOptionsRoles.push(name);
-    	}
+		this.crudJsonArrayRoles = new CrudJsonArray(this, "roles", schemaRole, {"title": "Controle de Acesso"}, this.serverConnection)
+		this.listCrudJsonArray.push(this.crudJsonArrayRoles);
+		//    	routeProvider.when("/app/:name/:action", {templateUrl: "/crud/templates/crud.html", controller: "CrudController", controllerAs: "vm"});
+		const fieldsMenu = {
+			"menu": {
+				"default": "action"
+			},
+			"label": {},
+			"path": {
+				"default": "service/action?filter={}&aggregate={}"
+			}
+		};
 
-    	this.listItemCrudJson.push(new CrudItemJson(this, fieldsRoles, "rolesJson", "Controle de Acesso", this.serverConnection, {nameOptions: nameOptionsRoles}));
-    	//
-    	// Menu do usuário
-//    	$routeProvider.when("/app/:name/:action", {templateUrl: "/crud/templates/crud.html", controller: "CrudController", controllerAs: "vm"});
-    	const fieldsMenu = {
-    			"menu":{"default":"action"},
-    			"label":{},
-    			"path":{"default":"service/action?filter={}&aggregate={}"}
-    			};
-
-    	this.listItemCrudJson.push(new CrudItemJson(this, fieldsMenu, "menu", "Menu", this.serverConnection));
-    	// Configurações Json
-    	const fieldsRoute = {
-    			"path":{"primaryKey":true, "default":"/app/xxx/:action"},
-    			"templateUrl":{"default":"./templates/crud.html"},
-    			"controller":{"default":"CrudController"},
-    			};
-    	// fields, instanceExternal, fieldNameExternal, title, serverConnection, selectCallback
-		// 	constructor(parent, fieldNameExternal, schema, options, serverConnection) {
-    	this.listCrudJsonArray.push(new CrudJsonArray(this, "routes", {"properties": fieldsRoute}, {"title": "Rotas de URL AngularJs"}, this.serverConnection));
-    }
+		this.listItemCrudJson.push(new CrudItemJson(this, fieldsMenu, "menu", "Menu", this.serverConnection));
+		// Configurações Json
+		const fieldsRoute = {
+			"path": {
+				"primaryKey": true,
+				"default": "/app/xxx/:action"
+			},
+			"templateUrl": {
+				"default": "./templates/crud.html"
+			},
+			"controller": {
+				"default": "CrudController"
+			},
+		};
+		this.listCrudJsonArray.push(new CrudJsonArray(this, "routes", {
+			"properties": fieldsRoute
+		}, {
+			"title": "Rotas de URL AngularJs"
+		}, this.serverConnection));
+		this.rufsService.params.saveAndExit = false;
+	}
 
 	get(primaryKey) {
-		return this.rufsService.get(primaryKey).then(response => {
-			this.original = response.data;
-			// atualiza as strings de referência
-			return this.setValues(response.data, false, false).then(() => response);
-		});
+		const genRolesFromMask = roles => {
+			for (const role of roles) {
+				role["_name"] = role.path.substring(1)
+				
+				for (let i = 0; i < OpenApi.methods.length; i++) {
+					if ((role.mask & (1 << i)) != 0) {
+						role[OpenApi.methods[i]] = true
+					} else {
+						role[OpenApi.methods[i]] = false
+					}
+				}
+			}
+		}
+
+		return super.get(primaryKey).then(response => {
+			if (response.data.roles == null) {
+				response.data.roles = [];
+			}
+
+			genRolesFromMask(response.data.roles)
+			this.crudJsonArrayRoles.get(this.instance).then(() => {
+				this.crudJsonArrayRoles.paginate({pageSize: 1000})
+				this.serverConnection.$scope.$apply();
+				return response
+			})
+		})
 	}
-	
+
 	save() {
-	    this.instance.password = HttpRestRequest.MD5(this.instance.password);
+		this.instance.password = HttpRestRequest.MD5(this.instance.password);
 		return super.save();
 	}
 
-    update() {
-        const addMenu = (serviceName, menu) => {
-            /*
-path: 'request/search',
-menu: '{"import":{"menu":"actions","label":"Importar","path":"request/import?overwrite.type=1&overwrite.state=10"},"buy":{"menu":"actions","label":"Compra","path":"request/new?overwrite={\"type\":1,\"state\":10}"},"sale":{"menu":"actions","label":"Venda","path":"request/new?overwrite={\"type\":2,\"state\":10}"},"requestPayment":{"menu":"form","label":"Financeiro","path":"request_payment/search"},"stock":{"menu":"form","label":"Estoque","path":"stock/search"},"product":{"menu":"form","label":"Produtos","path":"product/search"},"person":{"menu":"form","label":"Clientes e Fornecedores","path":"person/search"},"requests":{"menu":"form","label":"Requisições","path":"request/search"},"account":{"menu":"form","label":"Contas","path":"account/search"}}',
-routes : '[{"path":"/app/request/:action","controller":"RequestController"}]'
-            */
-            if (menu[serviceName] == undefined) {
-                menu[serviceName] = {"menu": "services", "label": serviceName, "path": `${CaseConvert.camelToUnderscore(serviceName)}/search`};
-            }
-        }
+	update() {
+		this.instance.menu = this.instance.menu || {};
 
-        const oldRoles = this.original.roles != undefined ? this.original.roles : {};
-        const newRoles = this.instance.roles != undefined ? this.instance.roles : {};
-        const menu = this.instance.menu != undefined ? this.instance.menu : {};
+		for (let role of this.instance.roles) {
+			role.mask = 0x00
 
-        for (let serviceName in newRoles) {
-            if (oldRoles[serviceName] == undefined) {
-                if (this.instance.path == undefined) {
-                    this.instance.path = `${CaseConvert.camelToUnderscore(serviceName)}/search`;
-                }
+			for (let i = 0; i < OpenApi.methods.length; i++) {
+				if (role[OpenApi.methods[i]] == true) {
+					role.mask |= (1 << i)
+				}
+			}
 
-                const listDependencies = this.serverConnection.getDependencies(serviceName);
+			const oldRole = this.original.roles.find(item => item.path == role.path)
 
-                for (let dependency of listDependencies) {
-                    if (newRoles[dependency] == undefined) {
-                        newRoles[dependency] = 0x01;// {}
-                    }
-                }
+			if (oldRole == undefined) {
+				if (this.instance.path == undefined) {
+					this.instance.path = `${role.path}/search`;
+				}
 
-                addMenu(serviceName, menu);
-            }
-        }
+				const serviceName = OpenApi.getSchemaName(role.path)
+				const listDependencies = this.serverConnection.getDependencies(serviceName);
 
-        this.instance.roles = newRoles;
-        this.instance.menu = menu;
-        if (this.instance.password != null && this.instance.password.length < 32) this.instance.password = HttpRestRequest.MD5(this.instance.password);
-        return super.update();
-    }
+				for (let dependency of listDependencies) {
+					if (this.instance.roles.find(item => item.path == dependency) == undefined) {
+						this.instance.roles.push({
+							path: dependency,
+							mask: 0x01
+						})
+					}
+				}
+
+				if (this.instance.menu[serviceName] == null) {
+					this.instance.menu[serviceName] = {
+						"menu": "services",
+						"label": serviceName,
+						"path": `${role.path}/search`
+					};
+				}
+			}
+		}
+
+		if (this.instance.password != null && this.instance.password.length < 32)
+			this.instance.password = HttpRestRequest.MD5(this.instance.password);
+		return super.update();
+	}
 
 }
 
-export {UserController}
+export { UserController }

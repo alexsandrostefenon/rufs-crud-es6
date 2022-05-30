@@ -130,7 +130,7 @@ class CrudCommom extends CrudUiSkeleton {
 
 	get(primaryKey) {
 		return this.rufsService.get(primaryKey).then(response => {
-			this.original = response.data;
+			this.original = JSON.parse(JSON.stringify(response.data))
 			// atualiza as strings de referência
 			return this.setValues(response.data, false, false).then(() => response);
 		});
@@ -147,7 +147,7 @@ class CrudCommom extends CrudUiSkeleton {
 	update() {
 		return this.rufsService.update(this.primaryKey, this.instance).
 		then(response => {
-			this.original = response.data;
+			this.original = JSON.parse(JSON.stringify(response.data))
 			return response;
 		});
 	}
@@ -156,7 +156,7 @@ class CrudCommom extends CrudUiSkeleton {
 		this.primaryKey = {};
 		return this.rufsService.save(this.instance).
 		then(response => {
-			this.original = response.data;
+			this.original = JSON.parse(JSON.stringify(response.data))
 			return response;
 		});
 	}

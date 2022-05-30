@@ -20,7 +20,7 @@ class CrudObjJson extends CrudUiSkeleton {
 	}
 
 	get(parentInstance) {
-		return this.process().
+		return this.process(this.action).
 		then(() => {
 			const data = parentInstance[this.fieldNameExternal] || {};
 			const obj = typeof(data) == "string" ? JSON.parse(data) : data;
