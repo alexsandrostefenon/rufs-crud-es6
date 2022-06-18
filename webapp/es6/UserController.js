@@ -133,7 +133,7 @@ class UserController extends CrudController {
 					this.instance.path = `${role.path}/search`;
 				}
 
-				const serviceName = OpenApi.getSchemaName(role.path)
+				const serviceName = CaseConvert.underscoreToCamel(role.path, false)
 				const listDependencies = this.serverConnection.getDependencies(serviceName);
 
 				for (let dependency of listDependencies) {
