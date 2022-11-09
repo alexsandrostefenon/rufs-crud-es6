@@ -67,7 +67,7 @@ class CrudController extends CrudCommom {
 
 	onNotify(schemaName, primaryKey, action) {
 		let ret = super.onNotify(schemaName, primaryKey, action);
-//   		this.$scope.$apply();
+   		this.serverConnection.$scope.$apply();
 		return ret;
 	}
 
