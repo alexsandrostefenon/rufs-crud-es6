@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "rufs-crud-es6",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "exports": {
     "./CrudMicroService.js": "./CrudMicroService.js"
   },
